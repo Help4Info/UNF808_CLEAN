@@ -1,0 +1,345 @@
+{
+  "type": "bundle",
+  "id": "bundle--a4f3b2d7-8e9c-4a6b-b5d1-7c8e9f3a2d4e",
+  "spec_version": "2.1",
+  "created": "2025-12-12T00:00:00.000Z",
+  "modified": "2025-12-12T00:00:00.000Z",
+  "objects": [
+    {
+      "type": "report",
+      "id": "report--b5e4c3d8-9f0d-5b7c-c6e2-8d9f0e4b3c5f",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "name": "APT41 - Techniques de Mouvement Latéral pour Détection SIEM",
+      "description": "Rapport STIX détaillant 5 techniques critiques d'APT41 pour l'implémentation dans l'infrastructure de test Caldera-Wazuh-Kestrel",
+      "report_types": ["threat-actor", "attack-pattern", "indicator"],
+      "published": "2025-12-12T00:00:00.000Z",
+      "object_refs": [
+        "threat-actor--6a2e693f-24e5-451a-9f88-b36a108e5662",
+        "attack-pattern--t1021-001",
+        "attack-pattern--t1021-002",
+        "attack-pattern--t1047",
+        "attack-pattern--t1550-001",
+        "attack-pattern--t1550-002",
+        "indicator--rdp-apt41",
+        "indicator--smb-apt41",
+        "indicator--wmi-apt41",
+        "indicator--token-apt41",
+        "indicator--pth-apt41",
+        "course-of-action--wazuh-rdp",
+        "course-of-action--wazuh-smb",
+        "course-of-action--wazuh-wmi",
+        "course-of-action--wazuh-token",
+        "course-of-action--wazuh-pth"
+      ]
+    },
+    {
+      "type": "threat-actor",
+      "id": "threat-actor--6a2e693f-24e5-451a-9f88-b36a108e5662",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "name": "APT41",
+      "description": "Groupe APT chinois spécialisé dans le mouvement latéral et l'escalade de privilèges dans les environnements Windows",
+      "aliases": ["Double Dragon", "Winnti", "Barium"],
+      "threat_actor_types": ["nation-state"],
+      "roles": ["agent"],
+      "sophistication": "expert",
+      "resource_level": "government"
+    },
+    {
+      "type": "attack-pattern",
+      "id": "attack-pattern--t1021-001",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "name": "Remote Desktop Protocol (RDP)",
+      "description": "APT41 utilise RDP pour le mouvement latéral après avoir obtenu des credentials valides. Technique observée dans les attaques contre les gouvernements US (2021-2022)",
+      "kill_chain_phases": [
+        {
+          "kill_chain_name": "mitre-attack",
+          "phase_name": "lateral-movement"
+        }
+      ],
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1021.001",
+          "url": "https://attack.mitre.org/techniques/T1021/001/"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "id": "attack-pattern--t1021-002",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "name": "SMB/Windows Admin Shares",
+      "description": "APT41 exploite les partages administratifs Windows (C$, ADMIN$) pour déployer des malwares et se déplacer latéralement. Utilisation intensive de SMB port 445",
+      "kill_chain_phases": [
+        {
+          "kill_chain_name": "mitre-attack",
+          "phase_name": "lateral-movement"
+        }
+      ],
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1021.002",
+          "url": "https://attack.mitre.org/techniques/T1021/002/"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "id": "attack-pattern--t1047",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "name": "Windows Management Instrumentation (WMI)",
+      "description": "APT41 utilise WMI pour l'exécution de code à distance et la collecte d'informations. Commandes wmic et PowerShell WMI observées dans leurs campagnes",
+      "kill_chain_phases": [
+        {
+          "kill_chain_name": "mitre-attack",
+          "phase_name": "execution"
+        }
+      ],
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1047",
+          "url": "https://attack.mitre.org/techniques/T1047/"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "id": "attack-pattern--t1550-001",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "name": "Application Access Token",
+      "description": "APT41 vole et réutilise les tokens d'accès des applications pour maintenir la persistance et contourner l'authentification",
+      "kill_chain_phases": [
+        {
+          "kill_chain_name": "mitre-attack",
+          "phase_name": "defense-evasion"
+        },
+        {
+          "kill_chain_name": "mitre-attack",
+          "phase_name": "lateral-movement"
+        }
+      ],
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1550.001",
+          "url": "https://attack.mitre.org/techniques/T1550/001/"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "id": "attack-pattern--t1550-002",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "name": "Pass the Hash",
+      "description": "APT41 utilise Pass-the-Hash avec les hashes NTLM volés pour s'authentifier sans connaître le mot de passe. Technique clé pour le mouvement latéral",
+      "kill_chain_phases": [
+        {
+          "kill_chain_name": "mitre-attack",
+          "phase_name": "lateral-movement"
+        }
+      ],
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1550.002",
+          "url": "https://attack.mitre.org/techniques/T1550/002/"
+        }
+      ]
+    },
+    {
+      "type": "indicator",
+      "id": "indicator--rdp-apt41",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "name": "APT41 RDP Activity Pattern",
+      "description": "Connexions RDP anormales depuis des comptes de service ou en dehors des heures de bureau",
+      "pattern": "[network-traffic:dst_port = 3389 AND network-traffic:protocols[*] = 'tcp' AND user-account:account_type = 'service']",
+      "pattern_type": "stix",
+      "valid_from": "2021-01-01T00:00:00.000Z",
+      "indicator_types": ["anomalous-activity"],
+      "kill_chain_phases": [
+        {
+          "kill_chain_name": "mitre-attack",
+          "phase_name": "lateral-movement"
+        }
+      ]
+    },
+    {
+      "type": "indicator",
+      "id": "indicator--smb-apt41",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "name": "APT41 SMB Lateral Movement",
+      "description": "Accès aux partages administratifs Windows via SMB",
+      "pattern": "[network-traffic:dst_port = 445 AND network-traffic:protocols[*] = 'smb' AND (file:name = 'C$' OR file:name = 'ADMIN$')]",
+      "pattern_type": "stix",
+      "valid_from": "2020-01-01T00:00:00.000Z",
+      "indicator_types": ["malicious-activity"]
+    },
+    {
+      "type": "indicator",
+      "id": "indicator--wmi-apt41",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "name": "APT41 WMI Execution",
+      "description": "Utilisation de WMI pour l'exécution distante via port 135",
+      "pattern": "[process:name = 'wmiprvse.exe' AND network-traffic:dst_port = 135]",
+      "pattern_type": "stix",
+      "valid_from": "2020-01-01T00:00:00.000Z",
+      "indicator_types": ["malicious-activity"]
+    },
+    {
+      "type": "indicator",
+      "id": "indicator--token-apt41",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "name": "APT41 Token Manipulation",
+      "description": "Manipulation de tokens d'accès pour l'escalade de privilèges",
+      "pattern": "[process:name = 'lsass.exe' AND process:opened_connection_refs[*].dst_port = 88]",
+      "pattern_type": "stix",
+      "valid_from": "2022-01-01T00:00:00.000Z",
+      "indicator_types": ["anomalous-activity"]
+    },
+    {
+      "type": "indicator",
+      "id": "indicator--pth-apt41",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "name": "APT41 Pass-the-Hash Pattern",
+      "description": "Pattern de Pass-the-Hash avec authentification NTLM sans mot de passe",
+      "pattern": "[windows-registry-key:key = 'HKLM\\\\SAM\\\\SAM\\\\Domains\\\\Account\\\\Users' AND process:name = 'lsass.exe']",
+      "pattern_type": "stix",
+      "valid_from": "2020-01-01T00:00:00.000Z",
+      "indicator_types": ["malicious-activity"]
+    },
+    {
+      "type": "course-of-action",
+      "id": "course-of-action--wazuh-rdp",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "name": "Wazuh Rule - Detect RDP Lateral Movement",
+      "description": "Règle Wazuh pour détecter les mouvements latéraux RDP d'APT41",
+      "action_type": "textual:detection-rule",
+      "action_reference": {
+        "source_name": "wazuh-rule",
+        "description": "rule_id: 100101, level: 12, EventID: 4624, LogonType: 10"
+      },
+      "efficacy": 85
+    },
+    {
+      "type": "course-of-action",
+      "id": "course-of-action--wazuh-smb",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "name": "Wazuh Rule - Detect SMB Admin Share Access",
+      "description": "Règle Wazuh pour détecter l'accès aux partages administratifs",
+      "action_type": "textual:detection-rule",
+      "action_reference": {
+        "source_name": "wazuh-rule",
+        "description": "rule_id: 100102, level: 14, EventID: 5140, ShareName: C$ OR ADMIN$"
+      },
+      "efficacy": 90
+    },
+    {
+      "type": "course-of-action",
+      "id": "course-of-action--wazuh-wmi",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "name": "Wazuh Rule - Detect WMI Remote Execution",
+      "description": "Règle Wazuh pour détecter l'exécution WMI distante",
+      "action_type": "textual:detection-rule",
+      "action_reference": {
+        "source_name": "wazuh-rule",
+        "description": "rule_id: 100103, level: 13, process: wmiprvse.exe, parent: svchost.exe"
+      },
+      "efficacy": 88
+    },
+    {
+      "type": "course-of-action",
+      "id": "course-of-action--wazuh-token",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "name": "Wazuh Rule - Detect Token Manipulation",
+      "description": "Règle Wazuh pour détecter la manipulation de tokens",
+      "action_type": "textual:detection-rule",
+      "action_reference": {
+        "source_name": "wazuh-rule",
+        "description": "rule_id: 100104, level: 15, EventID: 4672, PrivilegeList: SeDebugPrivilege"
+      },
+      "efficacy": 82
+    },
+    {
+      "type": "course-of-action",
+      "id": "course-of-action--wazuh-pth",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "name": "Wazuh Rule - Detect Pass-the-Hash",
+      "description": "Règle Wazuh pour détecter les attaques Pass-the-Hash",
+      "action_type": "textual:detection-rule",
+      "action_reference": {
+        "source_name": "wazuh-rule",
+        "description": "rule_id: 100105, level: 15, EventID: 4624, LogonType: 3, AuthenticationPackageName: NTLM"
+      },
+      "efficacy": 87
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--apt41-rdp",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "relationship_type": "uses",
+      "source_ref": "threat-actor--6a2e693f-24e5-451a-9f88-b36a108e5662",
+      "target_ref": "attack-pattern--t1021-001",
+      "description": "APT41 utilise RDP pour le mouvement latéral"
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--apt41-smb",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "relationship_type": "uses",
+      "source_ref": "threat-actor--6a2e693f-24e5-451a-9f88-b36a108e5662",
+      "target_ref": "attack-pattern--t1021-002",
+      "description": "APT41 utilise SMB/Admin Shares pour déployer des malwares"
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--apt41-wmi",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "relationship_type": "uses",
+      "source_ref": "threat-actor--6a2e693f-24e5-451a-9f88-b36a108e5662",
+      "target_ref": "attack-pattern--t1047",
+      "description": "APT41 utilise WMI pour l'exécution de code distant"
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--rdp-detect",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "relationship_type": "mitigates",
+      "source_ref": "course-of-action--wazuh-rdp",
+      "target_ref": "attack-pattern--t1021-001",
+      "description": "La règle Wazuh détecte l'utilisation malveillante de RDP"
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--smb-detect",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "relationship_type": "mitigates",
+      "source_ref": "course-of-action--wazuh-smb",
+      "target_ref": "attack-pattern--t1021-002",
+      "description": "La règle Wazuh détecte l'accès anormal aux partages administratifs"
+    }
+  ]
+}

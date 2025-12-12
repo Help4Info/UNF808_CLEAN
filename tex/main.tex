@@ -1,0 +1,164 @@
+% !TEX encoding = UTF-8
+% !TEX program = pdflatex
+\documentclass[12pt,a4paper]{article}
+
+% ===================================================================
+% ENCODAGE ET LANGUE (UTF-8)
+% ===================================================================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{csquotes}
+
+% ===================================================================
+% POLICE ARIAL (ou Helvetica en remplacement)
+% ===================================================================
+% Pour Arial sur Windows avec pdflatex
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+
+% Alternative si vous avez Arial installé (décommenter si nécessaire):
+% \usepackage{fontspec}
+% \setmainfont{Arial}
+
+% ===================================================================
+% MARGES 2.5cm
+% ===================================================================
+\usepackage[a4paper, margin=2.5cm]{geometry}
+
+% ===================================================================
+% PACKAGES ESSENTIELS
+% ===================================================================
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{mathtools}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{longtable}
+\usepackage{tabularx}
+
+% Définition de colonnes adaptatives
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}m{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}m{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}m{#1}}
+
+% ===================================================================
+% BIBLIOGRAPHIE (biber)
+% ===================================================================
+\usepackage[
+  backend=biber,
+  style=alphabetic,
+  sorting=nyt,
+  maxbibnames=99,
+  maxcitenames=2,
+  giveninits=true,
+  doi=true,
+  url=true,
+  isbn=false
+]{biblatex}
+\addbibresource{bib.bib}
+
+% Configuration pour afficher toutes les références
+\nocite{*}  % Inclure toutes les références (même non citées)
+
+% ===================================================================
+% LIENS HYPERTEXTES
+% ===================================================================
+\usepackage[colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=blue]{hyperref}
+
+% ===================================================================
+% ANNEXES
+% ===================================================================
+\usepackage[toc,page]{appendix}
+
+% ===================================================================
+% BLOCS DE CODE
+% ===================================================================
+\usepackage{fancyvrb}
+\usepackage{verbatim}
+
+% ===================================================================
+% MICROTYPE - Amélioration typographique
+% ===================================================================
+\usepackage{microtype}  % Améliore l'espacement et évite les débordements
+
+% ===================================================================
+% JUSTIFICATION DU TEXTE
+% ===================================================================
+\usepackage{ragged2e}
+\justifying  % Active la justification complète du texte
+
+% Amélioration de la césure et espacement
+\tolerance=1000
+\emergencystretch=10pt
+\hyphenpenalty=1000
+\exhyphenpenalty=1000
+
+% ===================================================================
+% ESPACEMENT
+% ===================================================================
+\usepackage{setspace}
+\onehalfspacing  % Interligne 1.5
+
+% ===================================================================
+% EN-TÊTES ET PIEDS DE PAGE
+% ===================================================================
+\usepackage{fancyhdr}
+\setlength{\headheight}{15.6pt}  % Correction du warning headheight
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\leftmark}
+\fancyhead[R]{\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+
+% ===================================================================
+% INFORMATIONS DU DOCUMENT
+% ===================================================================
+\input{preambule.tex}
+
+% ===================================================================
+% DÉBUT DU DOCUMENT
+% ===================================================================
+\begin{document}
+
+% PAGE DE GARDE
+\input{page_garde.tex}
+%\input{sommaire_executif.tex}
+
+
+% TABLE DES MATIÈRES
+\clearpage
+\tableofcontents
+\clearpage
+
+% CONTENU PRINCIPAL
+\input{etatart.tex}
+% Architecture et Configuration
+\input{architecture_section.tex}
+
+% Règles de Détection Wazuh
+\input{regles_wazuh_section.tex}
+
+% Requêtes de Détection et Threat Hunting
+\input{detection_queries_section.tex}
+
+% ===================================================================
+% NOUVELLE SECTION INNOVANTE : SOAR et Intelligence Artificielle
+% ===================================================================
+\input{automation_soar_section}
+
+% BIBLIOGRAPHIE
+\clearpage
+\printbibliography[title={Références bibliographiques}]
+
+% ANNEXES
+\clearpage
+\appendix
+\appendixpage
+\addappheadtotoc
+\input{appendix.tex}
+\input{dashboard_grafana_annexe.tex}  
+\input{kestrel_section.tex}
+\input{kestrel_figures_tables.tex}
+\end{document}

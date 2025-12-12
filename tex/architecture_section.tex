@@ -1,0 +1,530 @@
+% ===================================================================
+% SECTION ARCHITECTURE ET CONFIGURATION
+% ===================================================================
+
+\section{Architecture Globale du Système}
+\label{sec:architecture}
+
+\subsection{Vue d'Ensemble}
+
+Notre infrastructure de détection et de réponse automatisée suit une architecture multi-couches intégrant collecte, normalisation, détection, intelligence artificielle, et orchestration de la réponse. Le système repose sur six couches interconnectées permettant une détection et une réponse efficaces aux techniques de mouvement latéral d'APT41.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{figures/Architecture.jpg}
+    \caption{ illustre cette architecture en couches}
+    \label{fig:architecture_layers}
+\end{figure}
+
+
+\subsection{Infrastructure de Laboratoire}
+
+\subsubsection{Topologie Réseau}
+
+Notre environnement de laboratoire comprend deux segments réseau distincts : un réseau pour le domaine Active Directory (192.168.20.0/24) et un réseau pour l'infrastructure de sécurité (192.168.1.0/24). Cette séparation permet une isolation logique tout en facilitant la surveillance centralisée.
+
+Le tableau~\ref{tab:network_topology} présente la topologie réseau complète.
+
+\begin{table}[htbp]
+\centering
+\caption{Topologie Réseau du Laboratoire}
+\label{tab:network_topology}
+\begin{tabular}{|L{4cm}|C{3.5cm}|L{6cm}|}
+\hline
+\textbf{Système} & \textbf{Adresse IP} & \textbf{Rôle} \\
+\hline
+\multicolumn{3}{|c|}{\textbf{Réseau 192.168.20.0/24 - Domaine Active Directory}} \\
+\hline
+AD Server 2022 & 192.168.20.2 & Contrôleur de domaine, DNS, DHCP \\
+\hline
+WIN11-C01 & 192.168.20.11 & Poste de travail utilisateur \\
+\hline
+WIN11-C02 & 192.168.20.12 & Poste de travail utilisateur \\
+\hline
+\multicolumn{3}{|c|}{\textbf{Réseau 192.168.1.0/24 - Infrastructure de Sécurité}} \\
+\hline
+Wazuh Manager & 192.168.1.51 & SIEM, EDR, Indexer, Dashboard \\
+\hline
+Caldera Server & 192.168.1.88 & Émulation d'adversaires \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{Spécifications Techniques}
+
+Le tableau~\ref{tab:system_specs} détaille les spécifications techniques de chaque composant de l'infrastructure.
+
+\begin{table}[htbp]
+\centering
+\caption{Spécifications Techniques des Systèmes}
+\label{tab:system_specs}
+\begin{tabular}{|L{3.5cm}|C{2.5cm}|C{1.5cm}|C{1.5cm}|C{2.5cm}|}
+\hline
+\textbf{Système} & \textbf{OS} & \textbf{RAM} & \textbf{vCPU} & \textbf{Stockage} \\
+\hline
+AD Server 2022 & Windows Server 2022 & 8 GB & 4 & 100 GB \\
+\hline
+WIN11-C01 & Windows 11 Pro & 4 GB & 2 & 60 GB \\
+\hline
+WIN11-C02 & Windows 11 Pro & 4 GB & 2 & 60 GB \\
+\hline
+Wazuh Manager & Ubuntu 24.04 LTS & 16 GB & 8 & 200 GB \\
+\hline
+Caldera Server & Ubuntu 24.04 LTS & 8 GB & 4 & 80 GB \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Composants du Système}
+
+\subsubsection{Caldera - Framework d'Émulation d'Adversaires}
+
+Caldera est un framework développé par MITRE Corporation permettant l'émulation automatisée d'adversaires. Dans notre infrastructure, Caldera version 5.0.0 est déployé sur le serveur 192.168.1.88 et sert à simuler les techniques de mouvement latéral d'APT41.
+
+Les composants clés de Caldera incluent :
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{figures/caldera_mittre.png}
+    \caption{ illustre caldera abilities }
+    \label{fig:caldera abilities}
+\end{figure}
+
+\begin{itemize}
+    \item \textbf{Abilities} : Techniques ATT\&CK implémentées (RDP, PsExec, WMI, Pass-the-Hash, Pass-the-Ticket)
+    \item \textbf{Adversaries} : Profils d'attaquants combinant multiples abilities
+    \item \textbf{Operations} : Exécutions d'adversaries sur groupes d'agents
+    \item \textbf{Planners} : Logique de sélection et ordonnancement des abilities
+    \item \textbf{Fact Sources} : Contexte et variables pour les opérations
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{figures/caldera_abilities.png}
+    \caption{ illustre caldera abilities }
+    \label{fig:caldera abilities}
+\end{figure}
+
+
+\subsubsection{Sysmon - System Monitor}
+
+Sysmon version 15.15 est déployé sur tous les endpoints Windows avec la configuration SwiftOnSecurity sysmonconfig-export.xml. Sysmon génère des événements détaillés pour 29 types d'activités système, incluant création de processus, connexions réseau, accès fichiers, et événements WMI.
+
+Les Event IDs Sysmon les plus pertinents pour la détection du mouvement latéral sont :
+\begin{itemize}
+    \item Event ID 1 : Process creation (détection d'outils malveillants)
+    \item Event ID 3 : Network connection (connexions RDP, SMB, WMI)
+    \item Event ID 10 : Process access (accès à LSASS.exe pour credential dumping)
+    \item Event ID 19/20/21 : WMI events (persistance via WMI Event Consumers)
+\end{itemize}
+
+\subsubsection{Wazuh - Plateforme XDR et SIEM}
+
+Wazuh version 4.9.1 constitue le cœur de notre système de détection. L'architecture Wazuh comprend trois composants principaux :
+
+\begin{itemize}
+    \item \textbf{Wazuh Manager} : Moteur de corrélation et d'analyse exécutant les 55 règles personnalisées
+    \item \textbf{Wazuh Indexer} : Basé sur OpenSearch, stocke et indexe les événements de sécurité
+    \item \textbf{Wazuh Dashboard} : Interface web basée sur Kibana pour visualisation et investigation
+\end{itemize}
+
+Les fonctionnalités activées incluent l'analyse de logs multi-sources, l'intégration de threat intelligence ESET via STIX/TAXII 2.1, la détection de vulnérabilités, le monitoring d'intégrité de fichiers, et l'évaluation de configurations de sécurité selon les benchmarks CIS.
+
+\subsubsection{Wazuh-Indexer - Stockage et Indexation}
+
+Wazuh-Indexer est basé sur OpenSearch et constitue le backend de stockage des alertes générées par Wazuh Manager. Il est déployé sur le même serveur (192.168.1.51) que le Manager pour une architecture All-in-One optimisée.
+
+Les fonctionnalités principales incluent :
+\begin{itemize}
+    \item \textbf{Indexation en temps réel} : Les alertes Wazuh sont indexées dans \texttt{wazuh-alerts-*}
+    \item \textbf{Recherche avancée} : Support du langage DQL (OpenSearch Dashboards Query Language)
+    \item \textbf{Rétention configurable} : Politiques de rétention des indices par date
+    \item \textbf{Performance} : Optimisé pour traiter les 55 règles APT41 sur 3 agents Windows
+\end{itemize}
+
+\subsubsection{Wazuh Dashboard - Visualisation}
+
+Wazuh Dashboard, basé sur OpenSearch Dashboards, fournit l'interface web de visualisation accessible via \texttt{https://192.168.1.51}. Les fonctionnalités activées pour le projet incluent :
+
+\begin{itemize}
+    \item \textbf{Dashboards personnalisés} : 5 dashboards dédiés à la détection APT41
+    \item \textbf{Requêtes DQL} : Interface de recherche avancée avec syntaxe OpenSearch
+    \item \textbf{Visualisations} : 35+ graphiques (pie charts, line charts, heat maps, gauges)
+    \item \textbf{Alerting} : Règles de détection avec actions automatisées
+    \item \textbf{MITRE ATT\&CK} : Intégration native du framework avec mapping des techniques
+\end{itemize}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{figures/wazuh-dashboard.png}
+    \caption{ illustre wazuh dashboard APT41 crée pour les techniques}
+    \label{fig:wazuh dashboard APT41 crée pour les techniques }
+\end{figure}
+
+
+\subsection{Flux de Données et Pipeline de Détection}
+
+Le pipeline de détection suit un flux séquentiel en six étapes :
+
+\begin{enumerate}
+    \item \textbf{Génération d'événements} : Sysmon et Windows Events capturent les activités système
+    \item \textbf{Collecte} : Les agents Wazuh et Elastic collectent et transmettent les logs
+    \item \textbf{Indexation} : Wazuh Indexer et Elasticsearch stockent les données
+    \item \textbf{Détection} : Le moteur de règles Wazuh et les modèles ML détectent les comportements malveillants
+    \item \textbf{Réponse} : Les playbooks SOAR orchestrent la réponse automatisée
+\end{enumerate}
+
+\subsection{Intégration Threat Intelligence}
+
+La threat intelligence est intégrée via ESET TAXII 2.1 avec la configuration suivante :
+
+\begin{itemize}
+    \item \textbf{Collection URL} : \texttt{https://taxii.eset.com/taxii2/fa63f4eb5-f8b7-46a}
+    \item \textbf{Format} : STIX 2.1 (Structured Threat Information Expression)
+    \item \textbf{Polling Interval} : 3600 secondes (1 heure)
+\end{itemize}
+
+Les types d'indicateurs importés incluent les hashes MD5/SHA256 de malwares APT, adresses IP C2 (Command \& Control), domaines malveillants, URLs de phishing, et patterns YARA.
+
+\section{Configuration de l'Environnement}
+\label{sec:configuration}
+
+\subsection{Préparation du Serveur Windows 2022}
+
+\subsubsection{Installation Active Directory}
+
+L'installation du rôle Active Directory Domain Services (AD DS) et la promotion en contrôleur de domaine sont effectuées via PowerShell.
+
+\begin{Verbatim}[frame=single, numbers=left, numbersep=5pt, fontsize=\small]
+# Installation du role Active Directory Domain Services
+Install-WindowsFeature -Name AD-Domain-Services `
+    -IncludeManagementTools
+
+# Promotion en controleur de domaine
+Install-ADDSForest `
+    -DomainName "datasecure.local" `
+    -DomainNetbiosName "datasecure" `
+    -ForestMode "WinThreshold" `
+    -DomainMode "WinThreshold" `
+    -InstallDns:$true `
+    -SafeModeAdministratorPassword `
+        (ConvertTo-SecureString "P@ssw0rd!" `
+        -AsPlainText -Force) `
+    -Force:$true
+\end{Verbatim}
+
+\subsubsection{Création d'Utilisateurs et Groupes}
+
+Des utilisateurs de test et groupes sont créés pour simuler un environnement Active Directory réaliste.
+
+\begin{Verbatim}[frame=single, numbers=left, numbersep=5pt, fontsize=\small]
+# Creer une Organizational Unit pour le lab
+New-ADOrganizationalUnit -Name "LabUsers" `
+    -Path "DC=datasecure,DC=local"
+
+# Creer des utilisateurs de test
+$users = @(
+    @{Name="John.Doe"; Password="Welcome123!"},
+    @{Name="Jane.Smith"; Password="Welcome123!"},
+    @{Name="Adminlocal"; Password="Admin123!"}
+)
+
+foreach ($user in $users) {
+    $securePassword = ConvertTo-SecureString `
+        $user.Password -AsPlainText -Force
+    New-ADUser -Name $user.Name `
+        -SamAccountName $user.Name `
+        -UserPrincipalName "$($user.Name)@datasecure.local" `
+        -Path "OU=LabUsers,DC=datasecure,DC=local" `
+        -AccountPassword $securePassword `
+        -Enabled $true -PasswordNeverExpires $true
+}
+
+# Ajouter Admin.User au groupe Domain Admins
+Add-ADGroupMember -Identity "Domain Admins" `
+    -Members "Admin.User"
+\end{Verbatim}
+
+\subsubsection{Configuration des Politiques d'Audit}
+
+L'audit avancé est configuré pour capturer tous les événements pertinents à la détection du mouvement latéral.
+
+\begin{Verbatim}[frame=single, numbers=left, numbersep=5pt, fontsize=\small]
+# Activer l'audit d'authentification
+auditpol /set /subcategory:"Logon" `
+    /success:enable /failure:enable
+auditpol /set /subcategory:"Special Logon" `
+    /success:enable /failure:enable
+
+# Activer l'audit des partages reseau
+auditpol /set /subcategory:"File Share" `
+    /success:enable /failure:enable
+
+# Activer l'audit des processus
+auditpol /set /subcategory:"Process Creation" `
+    /success:enable
+
+# Activer l'audit Kerberos
+auditpol /set /subcategory:"Kerberos Authentication Service" `
+    /success:enable /failure:enable
+auditpol /set /subcategory:"Kerberos Service Ticket Operations" `
+    /success:enable /failure:enable
+\end{Verbatim}
+
+\subsection{Déploiement de Caldera}
+
+\subsubsection{Installation sur Ubuntu 24.04}
+
+Caldera est installé sur un serveur Ubuntu 24.04 dédié avec les dépendances Python nécessaires.
+
+\begin{Verbatim}[frame=single, numbers=left, numbersep=5pt, fontsize=\small]
+# Mise a jour du systeme
+sudo apt update && sudo apt upgrade -y
+
+# Installation des dependances
+sudo apt install -y python3 python3-pip python3-venv git
+
+# Cloner le repository Caldera
+cd /opt
+sudo git clone https://github.com/mitre/caldera.git --recursive
+cd caldera
+
+# Creer un environnement virtuel
+python3 -m venv venv
+source venv/bin/activate
+
+# Installer les requirements
+pip install -r requirements.txt
+
+# Demarrer Caldera
+python server.py --insecure --build
+\end{Verbatim}
+
+La configuration est personnalisée dans le fichier \texttt{conf/local.yml} avec les paramètres suivants : \texttt{host: 0.0.0.0}, \texttt{port: 8888}, et création d'utilisateurs administrateurs avec credentials sécurisés.
+
+\subsection{Installation et Configuration de Sysmon}
+
+\subsubsection{Déploiement sur Endpoints Windows}
+
+Sysmon est déployé sur tous les endpoints Windows (AD Server, WIN11-C01, WIN11-C02) avec la configuration SwiftOnSecurity.
+
+\begin{Verbatim}[frame=single, numbers=left, numbersep=5pt, fontsize=\small]
+# Telecharger Sysmon
+$url = "https://download.sysinternals.com/files/Sysmon.zip"
+$output = "C:\Temp\Sysmon.zip"
+Invoke-WebRequest -Uri $url -OutFile $output
+
+# Extraire l'archive
+Expand-Archive -Path $output `
+    -DestinationPath "C:\Temp\Sysmon" -Force
+
+# Télécharger la configuration SwiftOnSecurity
+$configUrl = "https://raw.githubusercontent.com/" + 
+    "SwiftOnSecurity/sysmon-config/master/" + 
+    "sysmonconfig-export.xml"
+$configOutput = "C:\Temp\sysmonconfig.xml"
+Invoke-WebRequest -Uri $configUrl -OutFile $configOutput
+
+# Installer Sysmon
+cd C:\Temp\Sysmon
+.\Sysmon64.exe -accepteula -i C:\Temp\sysmonconfig.xml
+
+# Verifier l'installation
+Get-Service Sysmon64
+Get-WinEvent -LogName "Microsoft-Windows-Sysmon/Operational" `
+    -MaxEvents 5 | Format-List
+\end{Verbatim}
+
+\subsection{Déploiement du Stack Wazuh}
+
+\subsubsection{Installation Wazuh Manager}
+
+Wazuh Manager version 4.9.1 est installé sur Ubuntu 24.04 comme composant central du SIEM.
+
+\begin{Verbatim}[frame=single, numbers=left, numbersep=5pt, fontsize=\small]
+# Installation des dependances
+sudo apt update
+sudo apt install curl apt-transport-https \
+    lsb-release gnupg2 -y
+
+# Ajouter le repository Wazuh
+curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | \
+    gpg --no-default-keyring \
+    --keyring gnupg-ring:/usr/share/keyrings/wazuh.gpg \
+    --import
+chmod 644 /usr/share/keyrings/wazuh.gpg
+
+echo "deb [signed-by=/usr/share/keyrings/wazuh.gpg] " + 
+    "https://packages.wazuh.com/4.x/apt/ stable main" | \
+    sudo tee -a /etc/apt/sources.list.d/wazuh.list
+
+# Installer Wazuh Manager
+sudo apt update
+sudo apt install wazuh-manager -y
+
+# Verifier le service
+sudo systemctl status wazuh-manager
+\end{Verbatim}
+
+\subsubsection{Installation Wazuh Indexer et Dashboard}
+
+Les composants Wazuh Indexer (basé sur OpenSearch) et Dashboard (basé sur Kibana) complètent l'installation.
+
+\begin{Verbatim}[frame=single, numbers=left, numbersep=5pt, fontsize=\small]
+# Installer Wazuh Indexer
+sudo apt install wazuh-indexer -y
+
+# Configuration initiale
+sudo /usr/share/wazuh-indexer/bin/indexer-security-init.sh
+
+# Demarrer le service
+sudo systemctl enable wazuh-indexer
+sudo systemctl start wazuh-indexer
+
+# Installer Wazuh Dashboard
+sudo apt install wazuh-dashboard -y
+
+# Demarrer le service
+sudo systemctl enable wazuh-dashboard
+sudo systemctl start wazuh-dashboard
+\end{Verbatim}
+
+Le Dashboard est accessible via \texttt{https://192.168.1.51} avec les credentials par défaut.
+
+\subsubsection{Déploiement des Agents Wazuh}
+
+Les agents Wazuh sont déployés sur tous les endpoints Windows pour la collecte centralisée des logs.
+
+\begin{Verbatim}[frame=single, numbers=left, numbersep=5pt, fontsize=\small]
+# Telecharger l'agent depuis le Manager
+$url = "https://192.168.1.51/agents/wazuh-agent-4.9.1-1.msi"
+$output = "C:\Temp\wazuh-agent.msi"
+Invoke-WebRequest -Uri $url -OutFile $output
+
+# Installer l'agent
+msiexec.exe /i C:\Temp\wazuh-agent.msi /q `
+    WAZUH_MANAGER="192.168.1.51" `
+    WAZUH_AGENT_NAME="WIN11-C01" `
+    WAZUH_REGISTRATION_SERVER="192.168.1.51"
+
+# Demarrer le service
+NET START WazuhSvc
+
+# Verifier le statut
+Get-Service WazuhSvc
+\end{Verbatim}
+
+Cette procédure est répétée pour WIN11-C02 (avec \texttt{WAZUH\_AGENT\_NAME="WIN11-C02"}) et le serveur AD (avec \texttt{WAZUH\_AGENT\_NAME="AD-Server-2022"}).
+
+\subsection{Configuration Complète des Agents Wazuh}
+
+\subsubsection{Architecture de Collecte}
+
+L'infrastructure de collecte repose exclusivement sur les agents Wazuh déployés sur tous les endpoints Windows. Chaque agent collecte les événements Windows natifs et les logs Sysmon, puis les transmet au Wazuh Manager pour analyse par les règles personnalisées.
+
+\subsubsection{Fichier de Configuration ossec.conf}
+
+Le fichier de configuration \texttt{C:\textbackslash Program Files (x86)\textbackslash ossec-agent\textbackslash ossec.conf} est personnalisé pour collecter tous les événements pertinents.
+
+\begin{Verbatim}[frame=single, numbers=left, numbersep=5pt, fontsize=\footnotesize]
+<ossec_config>
+  <!-- Configuration Manager -->
+  <client>
+    <server>
+      <address>192.168.1.51</address>
+      <port>1514</port>
+      <protocol>tcp</protocol>
+    </server>
+  </client>
+
+  <!-- Collecte Windows Event Logs Security -->
+  <localfile>
+    <location>Security</location>
+    <log_format>eventchannel</log_format>
+  </localfile>
+
+  <!-- Collecte Windows Event Logs System -->
+  <localfile>
+    <location>System</location>
+    <log_format>eventchannel</log_format>
+  </localfile>
+
+  <!-- Collecte Sysmon -->
+  <localfile>
+    <location>Microsoft-Windows-Sysmon/Operational</location>
+    <log_format>eventchannel</log_format>
+  </localfile>
+
+  <!-- Collecte WMI Activity -->
+  <localfile>
+    <location>Microsoft-Windows-WMI-Activity/Operational</location>
+    <log_format>eventchannel</log_format>
+  </localfile>
+</ossec_config>
+\end{Verbatim}
+
+\subsubsection{Vérification de la Configuration Agent}
+
+Après modification du fichier \texttt{ossec.conf}, l'agent Wazuh doit être redémarré pour appliquer les changements.
+
+\begin{Verbatim}[frame=single, numbers=left, numbersep=5pt, fontsize=\small]
+# Redemarrer le service Wazuh Agent
+Restart-Service WazuhSvc
+
+# Verifier le statut
+Get-Service WazuhSvc
+
+# Verifier la connexion au Manager
+Get-Content "C:\Program Files (x86)\ossec-agent\ossec.log" `
+    -Tail 20
+
+# Verifier que les logs sont bien collectes
+Get-Content "C:\Program Files (x86)\ossec-agent\active-response\
+    active-responses.log" -Tail 10
+\end{Verbatim}
+
+\subsubsection{Validation de la Collecte}
+
+La validation de la collecte s'effectue depuis le Wazuh Manager en vérifiant la réception des événements.
+
+\begin{Verbatim}[frame=single, numbers=left, numbersep=5pt, fontsize=\small]
+# Sur le Wazuh Manager, verifier les agents connectes
+sudo /var/ossec/bin/agent_control -l
+
+# Voir les evenements recus d'un agent specifique
+sudo tail -f /var/ossec/logs/archives/archives.json | \
+    grep "WIN11-C01"
+
+# Verifier les alertes generees
+sudo tail -f /var/ossec/logs/alerts/alerts.json | \
+    grep "rule.id.*110"
+\end{Verbatim}
+
+\subsubsection{Intégration Threat Intelligence ESET}
+
+L'intégration de la threat intelligence ESET est configurée directement dans Wazuh Manager via le module STIX/TAXII.
+
+\begin{Verbatim}[frame=single, numbers=left, numbersep=5pt, fontsize=\footnotesize]
+# Configuration dans /var/ossec/etc/ossec.conf
+<integration>
+  <name>taxii</name>
+  <taxii_url>https://taxii.eset.com/taxii2/</taxii_url>
+  <collection_id>fa63f4eb5-f8b7-46a</collection_id>
+  <poll_interval>3600</poll_interval>
+</integration>
+\end{Verbatim}
+
+Cette configuration permet l'import automatique des indicateurs de compromission (IoCs) ESET toutes les heures, enrichissant la détection des techniques APT41 avec des données de threat intelligence actualisées.
+
+\subsubsection{Architecture Finale de Collecte}
+
+L'architecture finale repose sur trois composants principaux pour chaque endpoint :
+
+\begin{enumerate}
+    \item \textbf{Sysmon} : Génère des événements détaillés (Event IDs 1-29) pour création processus, connexions réseau, accès fichiers, etc.
+    \item \textbf{Windows Event Logs} : Fournit les événements d'authentification (4624, 4625), Kerberos (4768, 4769), partages réseau (5140, 5145), et services (7045)
+    \item \textbf{Wazuh Agent} : Collecte tous les événements ci-dessus via \texttt{ossec.conf} et les transmet au Wazuh Manager pour analyse
+\end{enumerate}
+
+Cette architecture centralisée permet au Wazuh Manager d'appliquer les 55 règles de détection personnalisées sur tous les événements collectés, générant des alertes indexées dans Wazuh-Indexer et visualisées dans Wazuh Dashboard.

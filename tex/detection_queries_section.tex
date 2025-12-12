@@ -1,0 +1,391 @@
+% ===================================================================
+% SECTION REQUÊTES DE DÉTECTION
+% ===================================================================
+
+\section{Requêtes de Détection et Threat Hunting}
+\label{sec:detection_queries}
+
+\subsection{Requêtes OpenSearch Dashboards Query Language (DQL)}
+
+Wazuh Dashboard utilise OpenSearch Dashboards Query Language (DQL), similaire à KQL, pour effectuer des recherches avancées dans les données indexées par Wazuh-Indexer. Cinq requêtes opérationnelles sont présentées ci-dessous pour chaque technique de mouvement latéral d'APT41.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/Kestrel_console.png}
+    \caption{Dashboard Kestrel}
+    \label{fig:wazuh-dashboard-production}
+\end{figure}
+
+\subsubsection{DQL-1 : Détection Connexions RDP}
+
+Cette requête identifie toutes les connexions RDP réussies (Event ID 4624 avec LogonType 10) dans l'index \texttt{wazuh-alerts-*}.
+
+\begin{Verbatim}[frame=single, numbers=left, numbersep=5pt, fontsize=\footnotesize]
+data.win.eventdata.logonType: "10" AND 
+data.win.system.eventID: "4624" AND 
+rule.id: 110001
+\end{Verbatim}
+
+Cette requête peut être affinée pour détecter spécifiquement les connexions administrateur :
+
+\begin{Verbatim}[frame=single, numbers=left, numbersep=5pt, fontsize=\footnotesize]
+rule.id: 110002 AND 
+data.win.eventdata.targetUserName: (*admin* OR *adm_*)
+\end{Verbatim}
+
+Pour détecter les connexions RDP multiples depuis une même IP :
+
+\begin{Verbatim}[frame=single, numbers=left, numbersep=5pt, fontsize=\footnotesize]
+rule.id: 110003 AND 
+rule.description: "Connexions MULTIPLES"
+\end{Verbatim}
+
+\subsubsection{DQL-2 : Détection Accès Partages Admin SMB}
+
+Cette requête détecte les accès aux partages administratifs Windows (C\$, ADMIN\$, IPC\$) via nos règles Wazuh personnalisées.
+
+\begin{Verbatim}[frame=single, numbers=left, numbersep=5pt, fontsize=\footnotesize]
+rule.id: (110010 OR 110011) AND 
+data.win.eventdata.shareName: (*C$ OR *ADMIN$ OR *IPC$)
+\end{Verbatim}
+
+Pour identifier spécifiquement les accès critiques C\$ et ADMIN\$ :
+
+\begin{Verbatim}[frame=single, numbers=left, numbersep=5pt, fontsize=\footnotesize]
+rule.id: 110011 AND 
+data.win.eventdata.shareName: (*C$ OR *ADMIN$)
+\end{Verbatim}
+
+Pour détecter l'utilisation de PsExec :
+
+\begin{Verbatim}[frame=single, numbers=left, numbersep=5pt, fontsize=\footnotesize]
+rule.id: 110014 AND 
+data.win.eventdata.objectName: (*PSEXESVC* OR *paexec* OR *remcom*)
+\end{Verbatim}
+
+\subsubsection{DQL-3 : Détection Exécution via WMI}
+
+Cette requête identifie les processus lancés via WMI en détectant nos règles spécifiques.
+
+\begin{Verbatim}[frame=single, numbers=left, numbersep=5pt, fontsize=\footnotesize]
+rule.id: (110020 OR 110021) AND 
+data.win.eventdata.parentImage: *WmiPrvSE.exe*
+\end{Verbatim}
+
+Pour détecter spécifiquement PowerShell via WMI (critique) :
+
+\begin{Verbatim}[frame=single, numbers=left, numbersep=5pt, fontsize=\footnotesize]
+rule.id: 110021 AND 
+data.win.eventdata.image: (*powershell.exe* OR *pwsh.exe*)
+\end{Verbatim}
+
+Pour détecter les WMI Event Consumers (persistance) :
+
+\begin{Verbatim}[frame=single, numbers=left, numbersep=5pt, fontsize=\footnotesize]
+rule.id: 110024 AND 
+rule.mitre.id: "T1546.003"
+\end{Verbatim}
+
+\subsubsection{DQL-4 : Détection Pass-the-Hash}
+
+Cette requête détecte les authentifications NTLM suspectes indicatrices de Pass-the-Hash.
+
+\begin{Verbatim}[frame=single, numbers=left, numbersep=5pt, fontsize=\footnotesize]
+rule.id: (110030 OR 110033) AND 
+data.win.eventdata.authenticationPackageName: "NTLM" AND 
+data.win.eventdata.logonType: "3"
+\end{Verbatim}
+
+Pour détecter les anomalies WorkstationName (indicateur clé de PtH) :
+
+\begin{Verbatim}[frame=single, numbers=left, numbersep=5pt, fontsize=\footnotesize]
+rule.id: 110033 AND 
+data.win.eventdata.workstationName: ("-" OR "WORKSTATION")
+\end{Verbatim}
+
+Pour détecter le credential dumping (accès à LSASS) :
+
+\begin{Verbatim}[frame=single, numbers=left, numbersep=5pt, fontsize=\footnotesize]
+rule.id: 110034 AND 
+data.win.eventdata.targetImage: *lsass.exe*
+\end{Verbatim}
+
+\subsubsection{DQL-5 : Détection Pass-the-Ticket et Kerberos Anomalies}
+
+Cette requête détecte les TGT avec chiffrement RC4 (downgrade attack) ou sans pré-authentification (Golden Ticket).
+
+\begin{Verbatim}[frame=single, numbers=left, numbersep=5pt, fontsize=\footnotesize]
+rule.id: (110041 OR 110042) AND 
+data.win.eventdata.ticketEncryptionType: "0x17"
+\end{Verbatim}
+
+Pour détecter spécifiquement les Golden Tickets (sans pré-auth) :
+
+\begin{Verbatim}[frame=single, numbers=left, numbersep=5pt, fontsize=\footnotesize]
+rule.id: 110042 AND 
+data.win.eventdata.preAuthType: "0"
+\end{Verbatim}
+
+Pour détecter le Kerberoasting (demandes multiples de Service Tickets) :
+
+\begin{Verbatim}[frame=single, numbers=left, numbersep=5pt, fontsize=\footnotesize]
+rule.id: 110044 AND 
+rule.description: "Kerberoasting"
+\end{Verbatim}
+
+\subsubsection{DQL-6 : Détection Attaques Combinées}
+
+Pour détecter les corrélations multi-techniques :
+
+\begin{Verbatim}[frame=single, numbers=left, numbersep=5pt, fontsize=\footnotesize]
+rule.id: (110050 OR 110051 OR 110052 OR 110053 OR 110054 OR 110055) AND 
+rule.level: (14 OR 15)
+\end{Verbatim}
+
+Pour détecter spécifiquement le mouvement latéral massif :
+
+\begin{Verbatim}[frame=single, numbers=left, numbersep=5pt, fontsize=\footnotesize]
+rule.id: 110055 AND 
+rule.description: "MOUVEMENT LATERAL MASSIF"
+\end{Verbatim}
+
+\subsection{Requêtes Kestrel Threat Hunting}
+
+Kestrel est un langage déclaratif de threat hunting permettant d'effectuer des analyses sophistiquées avec corrélations temporelles et enrichissement threat intelligence. Pour l'utiliser avec Wazuh 4.11, nous devons configurer STIX-Shifter pour accéder aux données de Wazuh-Indexer.
+
+\subsubsection{Installation et Configuration Kestrel}
+
+Kestrel est installé sur le serveur Wazuh Manager (192.168.1.51) avec STIX-Shifter pour accéder aux données de Wazuh-Indexer.
+
+\begin{Verbatim}[frame=single, numbers=left, numbersep=5pt, fontsize=\small]
+# Installation dans environnement virtuel
+python3 -m venv /opt/kestrel-venv
+source /opt/kestrel-venv/bin/activate
+
+# Installer Kestrel + STIX-Shifter
+pip install kestrel-jupyter
+pip install stixshifter
+pip install stixshifter-modules-elastic_ecs
+
+# Lancer Jupyter Notebook
+jupyter notebook --ip=0.0.0.0 --port=8889 \
+    --no-browser --allow-root
+\end{Verbatim}
+
+La configuration STIX-Shifter connecte Kestrel aux indices Wazuh-Indexer.
+
+\begin{Verbatim}[frame=single, numbers=left, numbersep=5pt, fontsize=\footnotesize]
+# Configuration datasource Wazuh-Indexer dans Kestrel
+from kestrel.session import Session
+
+session = Session()
+session.config['datasources'] = {
+    'wazuh-indexer': {
+        'type': 'stixshifter',
+        'connection': {
+            'host': '192.168.1.51',
+            'port': 9200,
+            'selfSignedCert': True,
+            'indices': 'wazuh-alerts-*'
+        },
+        'connector': {
+            'module': 'elastic_ecs'
+        }
+    }
+}
+\end{Verbatim}
+
+\subsubsection{Notebook Kestrel 1 : Détection Mouvement Latéral RDP}
+
+Ce notebook Kestrel effectue une analyse complète des connexions RDP avec statistiques et détection d'anomalies en utilisant les alertes Wazuh.
+
+\begin{Verbatim}[frame=single, numbers=left, numbersep=5pt, fontsize=\footnotesize]
+# Cellule 1: Detection connexions RDP via regles Wazuh
+rdp_alerts = GET alert 
+  FROM stixshifter://wazuh-indexer 
+  WHERE rule_id IN ['110001', '110002', '110003']
+    AND timestamp >= t'2024-11-26T00:00:00Z'
+
+DISP rdp_alerts ATTR timestamp, agent_name, 
+    rule_description, rule_level LIMIT 20
+
+# Cellule 2: Statistiques par agent
+rdp_stats = GROUP rdp_alerts BY agent_name
+  COMPUTE COUNT(rdp_alerts) AS alert_count,
+          MAX(rule_level) AS max_severity
+
+DISP rdp_stats WHERE alert_count > 3
+
+# Cellule 3: Timeline des alertes (1h bins)
+rdp_timeline = GROUP rdp_alerts BY timestamp
+  TIMEBIN 1h
+  COMPUTE COUNT(rdp_alerts) AS alerts_per_hour
+
+DISP rdp_timeline
+
+# Cellule 4: Detection comptes admin cibles
+admin_rdp = FILTER rdp_alerts 
+  WHERE rule_id = '110002'
+
+DISP admin_rdp ATTR timestamp, agent_name, 
+    data_win_eventdata_targetUserName
+\end{Verbatim}
+
+\subsubsection{Notebook Kestrel 2 : Corrélation Pass-the-Hash}
+
+Ce notebook corrèle le credential dumping avec les authentifications NTLM suspectes pour détecter Pass-the-Hash en utilisant les alertes Wazuh.
+
+\begin{Verbatim}[frame=single, numbers=left, numbersep=5pt, fontsize=\footnotesize]
+# Cellule 1: Detection credential dumping
+lsass_alerts = GET alert 
+  FROM stixshifter://wazuh-indexer 
+  WHERE rule_id = '110034'
+    AND timestamp >= t'2024-11-26T00:00:00Z'
+
+DISP lsass_alerts ATTR timestamp, agent_name, 
+    rule_description
+
+# Cellule 2: Detection NTLM suspicious
+pth_alerts = GET alert 
+  FROM stixshifter://wazuh-indexer 
+  WHERE rule_id IN ['110030', '110033']
+    AND timestamp >= t'2024-11-26T00:00:00Z'
+
+DISP pth_alerts ATTR timestamp, agent_name, 
+    data_win_eventdata_workstationName
+
+# Cellule 3: Correlation temporelle (10 min window)
+pth_attack = JOIN lsass_alerts, pth_alerts
+  ON lsass_alerts.agent_name = pth_alerts.agent_name
+  WITHIN 10m
+
+DISP pth_attack ATTR 
+  timestamp, 
+  agent_name, 
+  rule_description
+
+# Cellule 4: Filtrer severite elevee
+critical_pth = FILTER pth_attack 
+  WHERE rule_level >= 12
+
+DISP critical_pth
+\end{Verbatim}
+
+\subsubsection{Notebook Kestrel 3 : Analyse WMI Event Consumers}
+
+Ce notebook détecte la persistance via WMI Event Consumers et corrèle avec l'exécution de processus suspects.
+
+\begin{Verbatim}[frame=single, numbers=left, numbersep=5pt, fontsize=\footnotesize]
+# Cellule 1: Detection WMI Event Consumers
+wmi_consumer_alerts = GET alert 
+  FROM stixshifter://wazuh-indexer 
+  WHERE rule_id = '110024'
+    AND timestamp >= t'2024-11-26T00:00:00Z'
+
+DISP wmi_consumer_alerts ATTR timestamp, agent_name, 
+    rule_description
+
+# Cellule 2: Detection processus lances via WMI
+wmi_exec_alerts = GET alert 
+  FROM stixshifter://wazuh-indexer 
+  WHERE rule_id IN ['110020', '110021']
+    AND timestamp >= t'2024-11-26T00:00:00Z'
+
+# Cellule 3: Filtrer executions PowerShell critiques
+critical_wmi = FILTER wmi_exec_alerts 
+  WHERE rule_id = '110021'
+
+DISP critical_wmi ATTR timestamp, agent_name, 
+    data_win_eventdata_image
+
+# Cellule 4: Correlation Consumers + Execution
+persistence_attack = JOIN wmi_consumer_alerts, critical_wmi
+  ON wmi_consumer_alerts.agent_name = critical_wmi.agent_name
+  WITHIN 1h
+
+DISP persistence_attack
+\end{Verbatim}
+
+\subsubsection{Notebook Kestrel 4 : Golden/Silver Ticket Detection}
+
+Ce notebook détecte les attaques Golden Ticket et Silver Ticket via analyse des alertes Kerberos de Wazuh.
+
+\begin{Verbatim}[frame=single, numbers=left, numbersep=5pt, fontsize=\footnotesize]
+# Cellule 1: Detection TGT sans pre-auth (Golden)
+golden_ticket_alerts = GET alert 
+  FROM stixshifter://wazuh-indexer 
+  WHERE rule_id = '110042'
+    AND timestamp >= t'2024-11-26T00:00:00Z'
+
+DISP golden_ticket_alerts ATTR timestamp, agent_name, 
+    data_win_eventdata_targetUserName
+
+# Cellule 2: Detection TGT avec RC4 (downgrade)
+rc4_alerts = GET alert 
+  FROM stixshifter://wazuh-indexer 
+  WHERE rule_id = '110041'
+    AND timestamp >= t'2024-11-26T00:00:00Z'
+
+# Cellule 3: Detection Kerberoasting
+kerberoast_alerts = GET alert 
+  FROM stixshifter://wazuh-indexer 
+  WHERE rule_id = '110044'
+    AND timestamp >= t'2024-11-26T00:00:00Z'
+
+kerberoast_stats = GROUP kerberoast_alerts BY agent_name
+  COMPUTE COUNT(kerberoast_alerts) AS attack_count
+
+DISP kerberoast_stats WHERE attack_count > 0
+
+# Cellule 4: Combiner toutes les attaques Kerberos
+all_kerberos_attacks = MERGE golden_ticket_alerts, 
+    rc4_alerts, kerberoast_alerts
+
+DISP all_kerberos_attacks ATTR timestamp, agent_name, 
+    rule_id, rule_description
+\end{Verbatim}
+
+\subsection{Configuration des Visualisations dans Wazuh Dashboard}
+
+Wazuh Dashboard (basé sur OpenSearch Dashboards) permet de créer des visualisations personnalisées pour surveiller les techniques de mouvement latéral d'APT41.
+
+\subsubsection{Accès à Wazuh Dashboard}
+
+Wazuh Dashboard est accessible via l'URL \texttt{https://192.168.1.51} avec les credentials administrateur configurés lors de l'installation. La navigation se fait via le menu latéral gauche, section \textbf{Visualize} pour créer des graphiques et \textbf{Dashboard} pour les assembler.
+
+\subsubsection{Configuration Index Pattern}
+
+Avant de créer des visualisations, configurez l'index pattern dans \textbf{Stack Management} → \textbf{Index Patterns} :
+
+\begin{itemize}
+    \item Index pattern : \texttt{wazuh-alerts-*}
+    \item Time field : \texttt{timestamp}
+    \item Refresh fields : Cliquer pour indexer tous les champs disponibles
+\end{itemize}
+
+Cette configuration permet à Wazuh Dashboard d'accéder à toutes les alertes générées par les règles personnalisées APT41.
+
+Le tableau~\ref{tab:wazuh_dashboard_viz} présente les visualisations recommandées pour le monitoring APT41.
+
+\begin{table}[htbp]
+\centering
+\caption{Visualisations Wazuh Dashboard pour Détection APT41}
+\label{tab:wazuh_dashboard_viz}
+\begin{tabular}{|L{3.5cm}|C{2.5cm}|L{7.5cm}|}
+\hline
+\textbf{Visualisation} & \textbf{Type} & \textbf{Configuration} \\
+\hline
+Alertes APT41 par Technique & Pie Chart & Agrégation : Terms sur rule.mitre.id, Top 5 \\
+\hline
+Timeline Alertes RDP & Line Chart & X-axis : timestamp (1h interval), Y-axis : Count, Filter : rule.id 110001-110005 \\
+\hline
+Top Agents Ciblés & Bar Chart & Y-axis : agent.name (Top 10), X-axis : Count, Filter : rule.id 110001-110055 \\
+\hline
+Sévérité Alertes & Gauge & Metric : Max rule.level, Color ranges : 0-10 green, 10-12 yellow, 12+ red \\
+\hline
+Heatmap Horaire & Heat Map & X-axis : timestamp (hour of day), Y-axis : rule.mitre.technique, Metric : Count \\
+\hline
+\end{tabular}
+\end{table}
+
+Ces visualisations permettent un monitoring en temps réel des activités malveillantes d'APT41 détectées par les règles Wazuh personnalisées.

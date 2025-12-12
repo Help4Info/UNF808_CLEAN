@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+     width="1200" height="800" viewBox="0 0 1200 800">
+  
+  <!-- Définitions -->
+  <defs>
+    <!-- Styles -->
+    <style>
+      .box { fill: #E3F2FD; stroke: #1976D2; stroke-width: 3; }
+      .datastore { fill: #FFF9C4; stroke: #F57F17; stroke-width: 3; }
+      .connector { fill: #FFE0B2; stroke: #E64A19; stroke-width: 3; }
+      .interface { fill: #C8E6C9; stroke: #388E3C; stroke-width: 3; }
+      .analyzer { fill: #FFCDD2; stroke: #C62828; stroke-width: 3; }
+      .title { font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; fill: #000; }
+      .label { font-family: Arial, sans-serif; font-size: 12px; fill: #000; font-weight: bold; }
+      .small { font-family: Arial, sans-serif; font-size: 10px; fill: #666; }
+      .arrow { stroke: #1976D2; stroke-width: 3; fill: none; }
+      .dataflow { stroke: #2196F3; stroke-width: 2; fill: none; stroke-dasharray: 5,5; }
+    </style>
+    
+    <!-- Marqueur de flèche -->
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#1976D2" />
+    </marker>
+    
+    <marker id="arrowhead-dash" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#2196F3" />
+    </marker>
+  </defs>
+  
+  <!-- Titre principal -->
+  <text x="600" y="40" text-anchor="middle" class="title" font-size="20">
+    Architecture Kestrel Threat Hunting Platform
+  </text>
+  
+  <!-- Groupe 1: Data Source -->
+  <rect x="30" y="80" width="240" height="140" rx="5" fill="none" stroke="#FF9800" 
+        stroke-width="2" stroke-dasharray="5,5"/>
+  <text x="150" y="70" text-anchor="middle" font-size="12" font-weight="bold" fill="#FF9800">
+    Data Source
+  </text>
+  
+  <!-- Wazuh-Indexer -->
+  <rect x="50" y="100" width="200" height="100" rx="10" class="datastore"/>
+  <text x="150" y="135" text-anchor="middle" class="label">Wazuh-Indexer</text>
+  <text x="150" y="155" text-anchor="middle" class="small">(OpenSearch 2.x)</text>
+  <text x="150" y="175" text-anchor="middle" class="small">Port: 9200</text>
+  <text x="150" y="190" text-anchor="middle" class="small">192.168.1.51</text>
+  
+  <!-- Groupe 2: Translation Layer -->
+  <rect x="330" y="40" width="290" height="170" rx="5" fill="none" stroke="#E64A19" 
+        stroke-width="2" stroke-dasharray="5,5"/>
+  <text x="475" y="30" text-anchor="middle" font-size="12" font-weight="bold" fill="#E64A19">
+    Translation Layer
+  </text>
+  
+  <!-- STIX-Shifter -->
+  <polygon points="350,120 450,100 550,120 530,180 370,180" class="connector"/>
+  <text x="450" y="140" text-anchor="middle" class="label">STIX-Shifter</text>
+  <text x="450" y="160" text-anchor="middle" class="small">v6.1.1</text>
+  
+  <!-- Module OpenSearch -->
+  <rect x="480" y="50" width="140" height="40" rx="5" fill="#E1BEE7" stroke="#7B1FA2" stroke-width="2"/>
+  <text x="550" y="67" text-anchor="middle" font-size="11">opensearch</text>
+  <text x="550" y="82" text-anchor="middle" font-size="11">module</text>
+  
+  <!-- Flèche vers module -->
+  <line x1="520" y1="100" x2="540" y2="90" stroke="#7B1FA2" stroke-width="2" 
+        stroke-dasharray="3,3" marker-end="url(#arrowhead)"/>
+  
+  <!-- Groupe 3: Hunting Platform -->
+  <rect x="630" y="80" width="510" height="120" rx="5" fill="none" stroke="#1976D2" 
+        stroke-width="2" stroke-dasharray="5,5"/>
+  <text x="885" y="70" text-anchor="middle" font-size="12" font-weight="bold" fill="#1976D2">
+    Hunting Platform
+  </text>
+  
+  <!-- Kestrel Engine -->
+  <rect x="650" y="100" width="200" height="100" rx="10" class="box"/>
+  <text x="750" y="135" text-anchor="middle" class="label">Kestrel Engine</text>
+  <text x="750" y="155" text-anchor="middle" class="small">Huntflow Execution</text>
+  <text x="750" y="175" text-anchor="middle" class="small">Session Management</text>
+  
+  <!-- Jupyter Notebook -->
+  <rect x="920" y="100" width="200" height="80" rx="10" class="interface"/>
+  <text x="1020" y="130" text-anchor="middle" class="label">Jupyter Notebook</text>
+  <text x="1020" y="150" text-anchor="middle" class="small">Interactive Interface</text>
+  <text x="1020" y="165" text-anchor="middle" class="small">Port: 8889</text>
+  
+  <!-- Groupe 4: SOAR Pipeline -->
+  <rect x="630" y="260" width="510" height="260" rx="5" fill="none" stroke="#7B1FA2" 
+        stroke-width="2" stroke-dasharray="5,5"/>
+  <text x="885" y="250" text-anchor="middle" font-size="12" font-weight="bold" fill="#7B1FA2">
+    SOAR Pipeline
+  </text>
+  
+  <!-- PostgreSQL -->
+  <rect x="650" y="280" width="200" height="100" rx="10" class="datastore"/>
+  <text x="750" y="315" text-anchor="middle" class="label">PostgreSQL</text>
+  <text x="750" y="335" text-anchor="middle" class="small">apt41_hunts</text>
+  <text x="750" y="355" text-anchor="middle" class="small">5 tables</text>
+  <text x="750" y="370" text-anchor="middle" class="small">Port: 5433</text>
+  
+  <!-- AI Analyzer -->
+  <rect x="920" y="280" width="200" height="100" rx="10" class="analyzer"/>
+  <text x="1020" y="315" text-anchor="middle" class="label">AI Analyzer</text>
+  <text x="1020" y="335" text-anchor="middle" class="small">OpenAI GPT</text>
+  <text x="1020" y="355" text-anchor="middle" class="small">Threat Intelligence</text>
+  
+  <!-- Grafana Dashboard -->
+  <rect x="920" y="420" width="200" height="80" rx="10" class="interface"/>
+  <text x="1020" y="450" text-anchor="middle" class="label">Grafana Dashboard</text>
+  <text x="1020" y="470" text-anchor="middle" class="small">Real-time Visualization</text>
+  <text x="1020" y="485" text-anchor="middle" class="small">Port: 3001</text>
+  
+  <!-- Flèches de connexion -->
+  
+  <!-- Wazuh -> STIX -->
+  <line x1="250" y1="150" x2="350" y2="150" class="arrow" marker-end="url(#arrowhead)"/>
+  <text x="290" y="140" font-size="10" fill="#1976D2">REST API</text>
+  
+  <!-- STIX -> Kestrel -->
+  <line x1="550" y1="150" x2="650" y2="150" class="arrow" marker-end="url(#arrowhead)"/>
+  <text x="570" y="140" font-size="10" fill="#1976D2">STIX Observables</text>
+  
+  <!-- Jupyter -> Kestrel -->
+  <line x1="920" y1="140" x2="850" y2="140" stroke="#388E3C" stroke-width="3" 
+        marker-end="url(#arrowhead)"/>
+  <text x="870" y="130" font-size="10" fill="#388E3C">Huntflows</text>
+  
+  <!-- Kestrel -> PostgreSQL (dataflow) -->
+  <line x1="750" y1="200" x2="750" y2="280" class="dataflow" marker-end="url(#arrowhead-dash)"/>
+  <text x="760" y="240" font-size="10" fill="#2196F3">SAVE</text>
+  
+  <!-- PostgreSQL -> AI -->
+  <line x1="850" y1="330" x2="920" y2="330" class="arrow" marker-end="url(#arrowhead)"/>
+  <text x="870" y="320" font-size="10" fill="#1976D2">SQL Query</text>
+  
+  <!-- AI -> Grafana -->
+  <line x1="1020" y1="380" x2="1020" y2="420" class="arrow" marker-end="url(#arrowhead)"/>
+  <text x="1030" y="400" font-size="10" fill="#1976D2">Metrics</text>
+  
+  <!-- Légende -->
+  <text x="50" y="580" font-size="14" font-weight="bold">Data Flow Legend:</text>
+  
+  <line x1="50" y1="600" x2="120" y2="600" class="arrow" marker-end="url(#arrowhead)"/>
+  <text x="130" y="605" font-size="10">Command/Control</text>
+  
+  <line x1="250" y1="600" x2="320" y2="600" class="dataflow" marker-end="url(#arrowhead-dash)"/>
+  <text x="330" y="605" font-size="10">Data Flow</text>
+  
+  <!-- Statistiques -->
+  <text x="50" y="640" font-size="14" font-weight="bold">Performance Metrics:</text>
+  <text x="50" y="665" font-size="11" fill="#333">• Query Time: &lt; 3 seconds per huntflow</text>
+  <text x="50" y="685" font-size="11" fill="#333">• Detections Analyzed: 24,879 in 48 hours</text>
+  <text x="50" y="705" font-size="11" fill="#333">• Pipeline Total Time: 11.5 minutes (93% reduction)</text>
+  
+  <!-- Technologies -->
+  <text x="600" y="640" font-size="14" font-weight="bold">Technologies:</text>
+  <text x="600" y="665" font-size="11" fill="#333">• Kestrel (KAAS Baseline)</text>
+  <text x="600" y="685" font-size="11" fill="#333">• STIX-Shifter 6.1.1 + OpenSearch Module</text>
+  <text x="600" y="705" font-size="11" fill="#333">• Wazuh 4.11 (OpenSearch 2.x)</text>
+  <text x="600" y="725" font-size="11" fill="#333">• PostgreSQL 15 + Grafana + OpenAI GPT</text>
+  
+  <!-- Watermark -->
+  <text x="600" y="780" text-anchor="middle" font-size="10" fill="#999">
+    APT41 Threat Hunting - Groupe 1 - Université de Sherbrooke - INF808
+  </text>
+  
+</svg>

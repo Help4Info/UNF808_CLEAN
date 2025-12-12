@@ -1,0 +1,355 @@
+{
+  "type": "bundle",
+  "id": "bundle--f7d2a4e6-70d5-4330-b5e8-58c8e3de925e",
+  "spec_version": "2.1",
+  "created": "2025-12-12T00:00:00.000Z",
+  "modified": "2025-12-12T00:00:00.000Z",
+  "objects": [
+    {
+      "type": "report",
+      "id": "report--84e4d88f-44ea-4bcd-bbf3-b2c1c320bcb3",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "name": "APT41 - Rapport STIX pour détection SIEM et IA",
+      "description": "Rapport STIX 2.1 complet détaillant le groupe APT41 (Double Dragon) pour l'implémentation de détection avancée avec Wazuh et systèmes d'IA. Ce rapport couvre les campagnes de 2007 à 2025.",
+      "report_types": ["threat-actor", "campaign", "indicator", "malware"],
+      "published": "2025-12-12T00:00:00.000Z",
+      "object_refs": [
+        "threat-actor--6a2e693f-24e5-451a-9f88-b36a108e5662",
+        "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
+        "identity--39746349-9c5c-47bd-8f39-0aff658d8ee7",
+        "attack-pattern--3b3cbbe0-6ed3-4334-b543-3ddfd8c5642d",
+        "attack-pattern--7e150503-88e7-4861-866b-ff1ac82c4475",
+        "attack-pattern--ae676644-d2d2-41b7-af7e-9bed1b55898c",
+        "malware--5d4c85af-3d42-4611-b6ba-e3b4c8e7ed77",
+        "malware--a8c7977e-758c-4543-9d79-c25cd60961f3",
+        "malware--9ea525fa-b0a9-4dde-84f2-bcea0137b3c1",
+        "tool--03342581-f790-4f03-ba41-e82e67392e23",
+        "campaign--8e2e2c2b-b3d4-4f1e-b329-8c7b0b735e12",
+        "campaign--2d54ce3a-e8de-4b7a-b29f-37e2ba024ff5",
+        "campaign--c26f1c05-8fa6-4bd6-aebf-4a5a0a2b9ce6",
+        "indicator--a932fcc6-e032-476c-826f-cb970a5a1ade",
+        "indicator--329ae34c-aaff-4c8e-bcae-8c995ae6b619",
+        "indicator--10d5f3b7-6be6-4da5-9a77-0f1e0bbea833",
+        "course-of-action--d63a2c18-e7fa-4a5f-aa8a-2fc53c1edd77",
+        "course-of-action--25dc1ce8-eb55-4333-ae30-a7cb4f5894a1"
+      ]
+    },
+    {
+      "type": "threat-actor",
+      "id": "threat-actor--6a2e693f-24e5-451a-9f88-b36a108e5662",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "name": "APT41",
+      "description": "APT41 est un groupe de cyberespionnage chinois actif depuis au moins 2007. Ce groupe est unique car il mène simultanément des opérations d'espionnage parrainées par l'État chinois et des activités de cybercriminalité à des fins lucratives personnelles. Le groupe est connu pour ses attaques sophistiquées sur la chaîne d'approvisionnement et son ciblage de multiples secteurs à travers le monde.",
+      "aliases": [
+        "Double Dragon",
+        "Winnti",
+        "Wicked Panda",
+        "Wicked Spider",
+        "Barium",
+        "Blackfly",
+        "Brass Typhoon",
+        "Bronze Atlas",
+        "Earth Baku",
+        "HOODOO",
+        "Red Kelpie",
+        "TG-2633"
+      ],
+      "first_seen": "2007-01-01T00:00:00.000Z",
+      "roles": ["agent"],
+      "goals": [
+        "Espionnage d'État pour soutenir les intérêts économiques et politiques chinois",
+        "Vol de propriété intellectuelle",
+        "Gain financier personnel via cybercriminalité",
+        "Surveillance et collecte de renseignements"
+      ],
+      "sophistication": "expert",
+      "resource_level": "government",
+      "primary_motivation": "organizational-gain",
+      "secondary_motivations": ["personal-financial-gain"],
+      "threat_actor_types": ["nation-state", "criminal"],
+      "external_references": [
+        {
+          "source_name": "FireEye",
+          "description": "FireEye APT41 Report",
+          "url": "https://www.fireeye.com/current-threats/apt-groups.html#apt41"
+        },
+        {
+          "source_name": "MITRE ATT&CK",
+          "external_id": "G0096",
+          "url": "https://attack.mitre.org/groups/G0096/"
+        }
+      ]
+    },
+    {
+      "type": "identity",
+      "id": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "name": "Organisations du secteur de la santé",
+      "description": "Hôpitaux, entreprises pharmaceutiques, et instituts de recherche médicale ciblés pour le vol de propriété intellectuelle",
+      "identity_class": "organization",
+      "sectors": ["healthcare"]
+    },
+    {
+      "type": "identity",
+      "id": "identity--39746349-9c5c-47bd-8f39-0aff658d8ee7",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "name": "Entreprises de télécommunications",
+      "description": "Opérateurs télécom ciblés pour la surveillance et l'interception de communications",
+      "identity_class": "organization",
+      "sectors": ["telecommunications"]
+    },
+    {
+      "type": "attack-pattern",
+      "id": "attack-pattern--3b3cbbe0-6ed3-4334-b543-3ddfd8c5642d",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "name": "Supply Chain Compromise",
+      "description": "APT41 compromet les chaînes d'approvisionnement logicielles pour distribuer des malwares à grande échelle. Exemples notables : CCleaner, ASUS Live Update",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1195",
+          "url": "https://attack.mitre.org/techniques/T1195/"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "id": "attack-pattern--7e150503-88e7-4861-866b-ff1ac82c4475",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "name": "Exploit Public-Facing Application",
+      "description": "APT41 exploite rapidement les vulnérabilités dans les applications exposées sur Internet, incluant Log4Shell, Citrix, et Exchange",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1190",
+          "url": "https://attack.mitre.org/techniques/T1190/"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "id": "attack-pattern--ae676644-d2d2-41b7-af7e-9bed1b55898c",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "name": "Spearphishing Attachment",
+      "description": "APT41 utilise des emails de spearphishing avec pièces jointes malveillantes pour compromettre les cibles initiales",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1566.001",
+          "url": "https://attack.mitre.org/techniques/T1566/001/"
+        }
+      ]
+    },
+    {
+      "type": "malware",
+      "id": "malware--5d4c85af-3d42-4611-b6ba-e3b4c8e7ed77",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "name": "SHADOWPAD",
+      "description": "Backdoor modulaire sophistiqué utilisé dans l'attaque CCleaner et d'autres compromissions de la chaîne d'approvisionnement",
+      "malware_types": ["backdoor", "remote-access-trojan"],
+      "is_family": true,
+      "capabilities": [
+        "captures-credentials",
+        "exfiltrates-data",
+        "persists-after-reboot",
+        "communicates-with-c2"
+      ]
+    },
+    {
+      "type": "malware",
+      "id": "malware--a8c7977e-758c-4543-9d79-c25cd60961f3",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "name": "WINNTI",
+      "description": "Famille de malware signature d'APT41, utilisée pour maintenir la persistance et voler des données",
+      "malware_types": ["backdoor"],
+      "is_family": true
+    },
+    {
+      "type": "malware",
+      "id": "malware--9ea525fa-b0a9-4dde-84f2-bcea0137b3c1",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "name": "DUSTPAN/DUSTTRAP",
+      "description": "Dropper récent utilisé par APT41 depuis 2023 pour déployer des backdoors en mémoire",
+      "malware_types": ["dropper", "loader"],
+      "is_family": true
+    },
+    {
+      "type": "tool",
+      "id": "tool--03342581-f790-4f03-ba41-e82e67392e23",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "name": "Cobalt Strike",
+      "description": "Framework de test de pénétration utilisé par APT41 pour les opérations post-exploitation",
+      "tool_types": ["exploitation-framework", "remote-access"]
+    },
+    {
+      "type": "campaign",
+      "id": "campaign--8e2e2c2b-b3d4-4f1e-b329-8c7b0b735e12",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "name": "CCleaner Supply Chain Attack",
+      "description": "Compromission de CCleaner 5.33 affectant 2.27 millions d'utilisateurs mais ciblant spécifiquement 11 entreprises technologiques",
+      "first_seen": "2017-03-01T00:00:00.000Z",
+      "last_seen": "2017-09-01T00:00:00.000Z"
+    },
+    {
+      "type": "campaign",
+      "id": "campaign--2d54ce3a-e8de-4b7a-b29f-37e2ba024ff5",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "name": "COVID-19 Research Espionage",
+      "description": "Ciblage d'organisations de santé et pharmaceutiques pour voler des recherches sur les vaccins COVID-19",
+      "first_seen": "2020-01-01T00:00:00.000Z",
+      "last_seen": "2021-06-01T00:00:00.000Z"
+    },
+    {
+      "type": "campaign",
+      "id": "campaign--c26f1c05-8fa6-4bd6-aebf-4a5a0a2b9ce6",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "name": "US State Governments Targeting",
+      "description": "Campagne ciblée contre au moins 6 gouvernements d'État américains via exploitation de vulnérabilités web",
+      "first_seen": "2021-05-01T00:00:00.000Z",
+      "last_seen": "2022-02-01T00:00:00.000Z"
+    },
+    {
+      "type": "indicator",
+      "id": "indicator--a932fcc6-e032-476c-826f-cb970a5a1ade",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "name": "CCleaner Malicious Hash",
+      "description": "Hash SHA256 du CCleaner 5.33 infecté",
+      "pattern": "[file:hashes.SHA256 = '1a4a5123d7b2c534cb3e3168f7032cf9ebf38b9a2a97226d0fdb7933cf6030ff']",
+      "pattern_type": "stix",
+      "valid_from": "2017-03-01T00:00:00.000Z",
+      "indicator_types": ["malicious-activity", "compromised"]
+    },
+    {
+      "type": "indicator",
+      "id": "indicator--329ae34c-aaff-4c8e-bcae-8c995ae6b619",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "name": "SHADOWPAD C2 Domain",
+      "description": "Domaine de commande et contrôle utilisé par SHADOWPAD",
+      "pattern": "[domain-name:value = 'dns-update.club']",
+      "pattern_type": "stix",
+      "valid_from": "2017-01-01T00:00:00.000Z",
+      "indicator_types": ["malicious-activity"]
+    },
+    {
+      "type": "indicator",
+      "id": "indicator--10d5f3b7-6be6-4da5-9a77-0f1e0bbea833",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "name": "APT41 SSL Certificate Pattern",
+      "description": "Modèle de certificat SSL utilisé par APT41 avec wolfSSL modifié",
+      "pattern": "[x509-certificate:issuer CONTAINS 'Thawte' AND x509-certificate:subject CONTAINS 'www.']",
+      "pattern_type": "stix",
+      "valid_from": "2022-01-01T00:00:00.000Z",
+      "indicator_types": ["anomalous-activity"]
+    },
+    {
+      "type": "course-of-action",
+      "id": "course-of-action--d63a2c18-e7fa-4a5f-aa8a-2fc53c1edd77",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "name": "Détection SIEM des IoCs APT41",
+      "description": "Configuration de règles SIEM (Wazuh) pour détecter les indicateurs de compromission APT41 incluant les hashes de fichiers, domaines C2, et patterns de certificats SSL",
+      "action_type": "textual:detection-rule",
+      "os_execution_envs": ["linux", "windows"],
+      "action_reference": {
+        "source_name": "Wazuh Rules",
+        "description": "Règles de détection Wazuh pour APT41"
+      }
+    },
+    {
+      "type": "course-of-action",
+      "id": "course-of-action--25dc1ce8-eb55-4333-ae30-a7cb4f5894a1",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "name": "Détection comportementale IA",
+      "description": "Utilisation de modèles d'apprentissage automatique pour détecter les comportements anormaux caractéristiques d'APT41, incluant les mouvements latéraux et l'exfiltration de données",
+      "action_type": "textual:detection-rule"
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--57b56a43-b8b0-4cba-9deb-34e3e1faed9e",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "relationship_type": "uses",
+      "source_ref": "threat-actor--6a2e693f-24e5-451a-9f88-b36a108e5662",
+      "target_ref": "malware--5d4c85af-3d42-4611-b6ba-e3b4c8e7ed77",
+      "description": "APT41 utilise SHADOWPAD pour les attaques de supply chain"
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--2f6a8d64-7587-4988-b6e8-4a91d2171b24",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "relationship_type": "uses",
+      "source_ref": "threat-actor--6a2e693f-24e5-451a-9f88-b36a108e5662",
+      "target_ref": "attack-pattern--3b3cbbe0-6ed3-4334-b543-3ddfd8c5642d",
+      "description": "APT41 utilise la compromission de supply chain comme vecteur d'attaque principal"
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--9e729a7e-0dd6-4097-95bf-db8d64c95222",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "relationship_type": "targets",
+      "source_ref": "threat-actor--6a2e693f-24e5-451a-9f88-b36a108e5662",
+      "target_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
+      "description": "APT41 cible le secteur de la santé pour le vol de propriété intellectuelle"
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--bea5d3b8-6525-4d8f-b662-49ad96c7c7b1",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "relationship_type": "uses",
+      "source_ref": "threat-actor--6a2e693f-24e5-451a-9f88-b36a108e5662",
+      "target_ref": "tool--03342581-f790-4f03-ba41-e82e67392e23",
+      "description": "APT41 utilise Cobalt Strike pour la post-exploitation"
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--73db74ed-abd5-4054-b70a-d33640735fa3",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "relationship_type": "attributed-to",
+      "source_ref": "campaign--8e2e2c2b-b3d4-4f1e-b329-8c7b0b735e12",
+      "target_ref": "threat-actor--6a2e693f-24e5-451a-9f88-b36a108e5662",
+      "description": "La campagne CCleaner est attribuée à APT41"
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--86d37287-6583-41f1-a93c-3ecaaf1a5e45",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "relationship_type": "indicates",
+      "source_ref": "indicator--a932fcc6-e032-476c-826f-cb970a5a1ade",
+      "target_ref": "malware--5d4c85af-3d42-4611-b6ba-e3b4c8e7ed77",
+      "description": "Le hash indique la présence de SHADOWPAD dans CCleaner"
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--c067f7bd-fc3f-42ae-9a8d-b5ea7c8b2aae",
+      "created": "2025-12-12T00:00:00.000Z",
+      "modified": "2025-12-12T00:00:00.000Z",
+      "relationship_type": "mitigates",
+      "source_ref": "course-of-action--d63a2c18-e7fa-4a5f-aa8a-2fc53c1edd77",
+      "target_ref": "attack-pattern--3b3cbbe0-6ed3-4334-b543-3ddfd8c5642d",
+      "description": "Les règles SIEM permettent de détecter les compromissions de supply chain"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+Technique,Name,Total,Critical,High,Medium,Low
+T1550.002,Pass-the-Hash,50,0,0,0,50
+T1550.003,Pass-the-Ticket,0,0,0,0,0
+T1021.001,RDP Lateral Movement,50,0,0,0,50
+T1021.002,SMB/PsExec,50,0,0,0,50
+T1047,WMI Execution,0,0,0,0,0
+T1003.001,LSASS Memory Dumping,0,0,0,0,0
+T1059.001,Suspicious PowerShell,0,0,0,0,0
+T1053.005,Scheduled Task,0,0,0,0,0
+T1087,Account Discovery,0,0,0,0,0
+T1558.003,Kerberoasting,0,0,0,0,0

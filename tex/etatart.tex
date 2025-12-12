@@ -1,0 +1,497 @@
+\section{Introduction}
+
+Les cyberattaques menées par des groupes de menaces persistantes avancées (APT) représentent l'une des principales préoccupations en matière de cybersécurité moderne. Ces acteurs sophistiqués, souvent soutenus par des États-nations, déploient des techniques d'attaque complexes et évolutives qui échappent aux mécanismes de défense traditionnels. Parmi ces groupes, APT41 (également connu sous le nom de Winnti Group ou Double Dragon) se distingue par sa double motivation : l'espionnage cyber au profit du gouvernement chinois et les activités cybercriminelles à des fins de gains financiers \cite{fireeye2019apt41,mandiant2020apt41}.
+
+Le groupe APT41 a démontré une capacité exceptionnelle à compromettre des organisations à travers le monde, ciblant des secteurs variés incluant la santé, les télécommunications, l'industrie technologique et les infrastructures critiques. Leurs techniques d'attaque, particulièrement celles liées au mouvement latéral au sein des réseaux compromis, représentent un défi majeur pour les équipes de défense \cite{mitreattack2024apt41}.
+
+\subsection{Problématique}
+
+Le mouvement latéral constitue une phase critique de la chaîne d'attaque (Kill Chain) permettant aux attaquants de progresser d'un système initialement compromis vers d'autres ressources de valeur au sein du réseau cible. APT41 excelle dans l'utilisation de techniques de mouvement latéral qui exploitent des protocoles légitimes de Windows, rendant leur détection particulièrement difficile \cite{cyberkillchain2011lockheed}.
+
+Les techniques spécifiques employées par APT41 incluent l'utilisation de Remote Desktop Protocol (RDP), Server Message Block (SMB) avec PsExec, Windows Management Instrumentation (WMI), ainsi que les attaques Pass-the-Hash et Pass-the-Ticket. Ces techniques, bien que documentées dans le cadre MITRE ATT\&CK \cite{mitreattack2024framework}, nécessitent une compréhension approfondie pour développer des capacités de détection efficaces.
+
+\subsection{Objectifs de l'état de l'art}
+
+Cet état de l'art vise à : (1) Établir un profil détaillé du groupe APT41, (2) Présenter les cadres de modélisation des attaques (MITRE ATT\&CK, Cyber Kill Chain, Diamond Model), (3) Documenter en détail les cinq techniques principales de mouvement latéral avec requêtes de détection Kestrel, et (4) Présenter l'écosystème d'outils de simulation et détection (Caldera, Wazuh, Sysmon, Kestrel, OCSF).
+
+\subsection{Organisation du document}
+
+Le reste de ce document est organisé comme suit : la Section~\ref{sec:apt41} présente le profil du groupe APT41, la Section~\ref{sec:frameworks} introduit les cadres de modélisation, la Section~\ref{sec:techniques} détaille les cinq techniques de mouvement latéral, la Section~\ref{sec:ecosystem} décrit l'écosystème de détection, et la Section~\ref{sec:conclusion} conclut.
+
+
+\section{Le groupe APT41 : Profil et Contexte}
+\label{sec:apt41}
+
+\subsection{Origine et Attribution}
+
+APT41, également désigné sous les noms de Winnti Group, Barium, BRONZE ATLAS ou Double Dragon, est un groupe de cyberespionnage chinois actif depuis au moins 2012 \cite{fireeye2019apt41}. Ce groupe se distingue des autres acteurs APT par sa nature hybride, combinant des opérations d'espionnage sponsorisées par l'État chinois avec des activités cybercriminelles motivées par le gain financier \cite{mandiant2020apt41}.
+
+L'attribution géographique d'APT41 à la Chine repose sur plusieurs indicateurs convergents : heures d'opération durant les heures de travail en Chine (UTC+8), cibles alignées avec les intérêts stratégiques chinois, infrastructure basée en Chine, et présence de caractères chinois dans le code malveillant. En septembre 2020, le département de la Justice des États-Unis a inculpé cinq membres présumés d'APT41 \cite{doj2020apt41indictment}.
+
+\subsection{Motivations et Cibles}
+
+APT41 présente une dualité unique dans ses motivations opérationnelles \cite{fireeye2019apt41}. Les opérations d'espionnage ciblent la propriété intellectuelle, les informations stratégiques gouvernementales, et les données sur les infrastructures critiques. Parallèlement, les activités cybercriminelles incluent le déploiement de ransomware, le vol de cryptomonnaies, la manipulation de jeux en ligne, et le vol de données bancaires.
+
+Les secteurs verticaux principalement ciblés incluent : technologies de l'information et télécommunications, santé et industrie pharmaceutique, énergie et ressources naturelles, éducation et recherche, services financiers, média et divertissement, commerce de détail et biens de consommation.
+
+\subsection{Campagnes Notables}
+
+Les campagnes majeures d'APT41 incluent Winnti 1.0 (2012-2014) ciblant l'industrie du jeu vidéo, les attaques de chaîne d'approvisionnement (2015-2017) notamment contre CCleaner \cite{talos2017ccleaner}, la campagne contre les opérateurs télécoms (2018-2019), l'exploitation de la pandémie COVID-19 (2019-2020) pour cibler la recherche médicale, l'exploitation des vulnérabilités Exchange Server (2020-2021), et la diversification récente (2022-2024) incluant l'IA et l'automatisation.
+
+
+\section{Cadres de Modélisation des Attaques}
+\label{sec:frameworks}
+
+La compréhension des activités d'APT41 nécessite l'utilisation de cadres de modélisation standardisés.
+
+\subsection{MITRE ATT\&CK Framework}
+
+MITRE ATT\&CK est une base de connaissances cataloguant les tactiques et techniques utilisées par les adversaires \cite{mitreattack2024framework}. La structure hiérarchique comprend : Tactiques (14 objectifs de haut niveau comme Lateral Movement TA0008), Techniques (~200 méthodes), Sous-techniques (~400 implémentations spécifiques), et Procédures (utilisations par groupes spécifiques). MITRE maintient un profil détaillé d'APT41 (G0096) documentant 63 techniques et sous-techniques \cite{mitreattack2024apt41}.
+
+\subsection{Cyber Kill Chain et Diamond Model}
+
+La Cyber Kill Chain de Lockheed Martin décompose une attaque en sept phases séquentielles \cite{cyberkillchain2011lockheed}. Le mouvement latéral intervient entre Command \& Control et Actions on Objectives, permettant à l'attaquant de découvrir d'autres systèmes, élever ses privilèges, accéder aux données cibles, et établir de multiples points de persistance.
+
+Le Diamond Model analyse les relations entre quatre composants : Adversaire (APT41), Capacité (techniques et outils comme Mimikatz), Infrastructure (serveurs C2, domaines), et Victime (organisation cible) \cite{caltagirone2013diamond}.
+
+\subsection{Complémentarité}
+
+Ces frameworks sont complémentaires : MITRE ATT\&CK fournit un vocabulaire standardisé des techniques, Cyber Kill Chain offre une vue séquentielle temporelle, et Diamond Model permet d'analyser les relations entre acteurs, capacités, infrastructure et cibles. L'utilisation combinée facilite le développement de stratégies de défense efficaces.
+
+
+\section{Techniques de Mouvement Latéral d'APT41}
+\label{sec:techniques}
+
+Cette section détaille les cinq techniques principales de mouvement latéral utilisées par APT41, toutes documentées sous la tactique TA0008 (Lateral Movement) et exploitant des fonctionnalités légitimes de Windows.
+
+\subsection{T1021.001 - Remote Desktop Protocol (RDP)}
+\label{sec:rdp}
+
+\subsubsection{Description et Fonctionnement}
+
+Remote Desktop Protocol (RDP) est un protocole propriétaire de Microsoft permettant la connexion graphique à distance à un système Windows \cite{microsoft2024rdp}. RDP opère sur le port TCP 3389 par défaut et établit une session chiffrée utilisant TLS. L'authentification peut utiliser Network Level Authentication (NLA) avec CredSSP, Kerberos dans Active Directory, ou NTLM pour les systèmes hors domaine.
+
+Les adversaires, dont APT41, exploitent RDP pour le mouvement latéral en utilisant des credentials légitimes volés ou compromis \cite{mitreattack2024rdp}. APT41 utilise RDP après compromission initiale pour établir des sessions vers d'autres systèmes, pour la reconnaissance manuelle de l'environnement, le déploiement d'outils, et l'exfiltration de fichiers sensibles \cite{fireeye2019apt41}.
+
+\subsubsection{Détection}
+
+Les méthodes de détection incluent l'analyse des Event IDs : 4624 Type 10 (connexion RDP réussie), 4625 (tentatives échouées suggérant brute-force), événements TerminalServices 21/22/25 (sessions RDP), Sysmon Event 3 (connexions réseau vers port 3389), et logs firewall montrant connexions inhabituelles vers port 3389.
+
+Les indicateurs comportementaux incluent : connexions RDP depuis des systèmes inhabituels (serveurs, postes non-administratifs), connexions à des heures anormales, sessions courtes et répétées (indicateur de mouvement latéral automatisé), et connexions en cascade (A→B→C→D) suggérant une progression méthodique.
+
+\subsubsection{Requêtes de détection Kestrel}
+
+\paragraph{Détection de connexions RDP anormales}
+\begin{verbatim}
+# Connexions RDP sur 24h
+rdp_connections = GET network-traffic
+  FROM stixshifter://windows-endpoint
+  WHERE dst_port = 3389 OR src_port = 3389
+  START t-24h STOP now()
+
+# Filtrer les connexions depuis des sources inhabituelles
+suspicious_rdp = FILTER rdp_connections
+  WHERE src_ip NOT IN ('192.168.1.50', '192.168.1.51')
+
+DISP suspicious_rdp ATTR src_ip, dst_ip, time,
+     bytes_sent, bytes_received
+\end{verbatim}
+
+\paragraph{Détection de mouvement latéral RDP en cascade}
+\begin{verbatim}
+# Authentifications RDP (Event 4624 Type 10)
+rdp_logons = GET authentication
+  FROM stixshifter://windows-endpoint
+  WHERE event_id = 4624 AND logon_type = 10
+  START t-6h STOP now()
+
+# Grouper par utilisateur pour identifier les cascades
+lateral_movement = GROUP rdp_logons BY user.name
+  HAVING COUNT(DISTINCT dst_ip) >= 3
+  ORDER BY COUNT DESC
+
+DISP lateral_movement ATTR user.name, COUNT,
+     COLLECT(dst_ip), time_range
+\end{verbatim}
+
+\paragraph{Corrélation : Échecs suivis de succès (brute-force)}
+\begin{verbatim}
+# Échecs d'authentification RDP
+rdp_failures = GET authentication
+  FROM stixshifter://windows-endpoint
+  WHERE event_id = 4625 AND logon_type = 10
+  START t-1h STOP now()
+
+# Succès d'authentification RDP
+rdp_success = GET authentication
+  FROM stixshifter://windows-endpoint
+  WHERE event_id = 4624 AND logon_type = 10
+  START t-1h STOP now()
+
+# Corrélation : > 5 échecs puis succès
+brute_force = JOIN rdp_failures, rdp_success
+  ON rdp_failures.src_ip = rdp_success.src_ip
+  WHERE COUNT(rdp_failures) > 5
+  WITHIN 10m
+
+DISP brute_force ATTR src_ip, user.name,
+     failure_count, success_time
+\end{verbatim}
+
+\subsubsection{Mitigations}
+
+Les contre-mesures recommandées incluent : désactivation de RDP sur les systèmes ne nécessitant pas d'accès à distance, utilisation de RDP Gateway pour centraliser et auditer les accès, implémentation de Network Level Authentication (NLA), application de politiques de mots de passe forts et d'authentification multi-facteurs (MFA), restriction de RDP via des règles de pare-feu (segmentation réseau), et surveillance avec alertes sur les connexions RDP inhabituelles.
+
+
+\subsection{T1021.002 - SMB/Windows Admin Shares (PsExec)}
+
+\subsubsection{Description et Fonctionnement}
+
+Server Message Block (SMB) est un protocole de partage de fichiers en réseau. Windows expose des partages administratifs par défaut (C\$, ADMIN\$, IPC\$) accessibles aux comptes administrateurs \cite{microsoft2024smb}. Des outils comme PsExec de Sysinternals permettent d'exécuter des commandes à distance via SMB \cite{russinovich2024psexec}.
+
+PsExec fonctionne selon le processus suivant : connexion au partage ADMIN\$ de la machine distante via SMB (port 445), copie d'un service Windows temporaire (PSEXESVC.exe) sur le système distant, création et démarrage du service via le Service Control Manager (SCM), exécution de la commande spécifiée dans le contexte du service, récupération de la sortie via named pipes, et nettoyage du service temporaire.
+
+APT41 utilise SMB et PsExec pour l'exécution de commandes à distance (déploiement de malwares, scripts de reconnaissance), le déploiement de ransomware à travers le réseau, la copie de fichiers via les partages administratifs, et l'accès aux credentials via dump de LSASS.exe \cite{mandiant2020apt41}.
+
+\subsubsection{Détection}
+
+Les indicateurs de détection incluent : Event 4624 Type 3 (authentification réseau SMB), 5140/5145 (accès aux partages réseau), 7045 (installation de nouveau service PSEXESVC), Sysmon Event 1 (création de processus PSEXESVC.exe), Event 3 (connexions réseau vers port 445), Event 11 (création de fichiers dans ADMIN\$), et Events 17/18 (création/connexion de named pipes).
+
+Patterns de détection Sysmon spécifiques : processus parent services.exe créant des processus inhabituels, création de services avec des noms suspicieux ou aléatoires, connexions SMB suivies immédiatement de création de processus, et utilisation de named pipes avec des noms génériques.
+
+\subsubsection{Requêtes de détection Kestrel}
+
+\paragraph{Détection de services PSEXESVC}
+\begin{verbatim}
+# Recherche de processus PSEXESVC
+psexec_services = GET process
+  FROM stixshifter://windows-endpoint
+  WHERE (name LIKE '%PSEXESVC%' OR name LIKE '%PAExec%')
+    AND parent_process.name = 'services.exe'
+  START t-7d STOP now()
+
+DISP psexec_services ATTR pid, name, command_line,
+     user, parent_process, time
+\end{verbatim}
+
+\paragraph{Détection de connexions SMB suspectes}
+\begin{verbatim}
+# Connexions SMB (port 445)
+smb_connections = GET network-traffic
+  FROM stixshifter://windows-endpoint
+  WHERE dst_port = 445 OR src_port = 445
+  START t-24h STOP now()
+
+# Filtrer connexions suspectes
+suspicious_smb = FILTER smb_connections
+  WHERE src_ip NOT IN ('192.168.1.0/24')
+
+DISP suspicious_smb ATTR src_ip, dst_ip, time,
+     protocol, bytes_transferred
+\end{verbatim}
+
+\paragraph{Corrélation SMB + Création de processus}
+\begin{verbatim}
+# Connexions SMB
+smb_connections = GET network-traffic
+  FROM stixshifter://windows-endpoint
+  WHERE dst_port = 445
+  START t-24h STOP now()
+
+# Processus créés par services.exe
+processes = GET process
+  FROM stixshifter://windows-endpoint
+  WHERE parent_process.name = 'services.exe'
+  START t-24h STOP now()
+
+# Corrélation : SMB suivi de processus dans 5 minutes
+lateral_smb = JOIN smb_connections, processes
+  ON smb_connections.dst_ip = processes.host_ip
+  WITHIN 5m
+
+DISP lateral_smb ATTR src_ip, process.name,
+     process.command_line, time_diff
+\end{verbatim}
+
+\paragraph{Détection de named pipes PsExec}
+\begin{verbatim}
+# Named pipes créés (Sysmon Event 17, 18)
+named_pipes = GET process
+  FROM stixshifter://windows-endpoint
+  WHERE event_type IN ('PipeCreated', 'PipeConnected')
+    AND pipe_name LIKE '%psexec%'
+  START t-24h STOP now()
+
+DISP named_pipes ATTR pipe_name, process.name,
+     process.user, time
+\end{verbatim}
+
+\subsubsection{Mitigations}
+
+Les stratégies de mitigation incluent : désactivation des partages administratifs par défaut via GPO, restriction de l'accès SMB via firewall (port 445), implémentation de Local Administrator Password Solution (LAPS), restriction des services distants via Group Policy, utilisation de comptes à privilèges distincts pour administration, et surveillance des créations de services et accès aux partages.
+
+
+\subsection{T1047 - Windows Management Instrumentation (WMI)}
+
+\subsubsection{Description et Fonctionnement}
+
+Windows Management Instrumentation (WMI) est une infrastructure de gestion et d'administration de systèmes Windows \cite{microsoft2024wmi}. Les adversaires exploitent WMI pour exécuter des commandes à distance, créer de la persistance et collecter des informations système \cite{mitreattack2024wmi}.
+
+Les mécanismes d'exécution WMI incluent : WMIC.exe (ligne de commande), PowerShell (Invoke-WmiMethod, Get-WmiObject), DCOM (port 135 + ports dynamiques), et WinRM (ports 5985 HTTP, 5986 HTTPS). Le processus WmiPrvSE.exe héberge les fournisseurs WMI et exécute les commandes demandées.
+
+APT41 utilise WMI pour l'exécution de commandes distantes (déploiement de malwares), la reconnaissance système (énumération de processus, services, configurations), la persistance via Event Subscriptions (déclencheurs automatiques), et la collecte d'informations (données système, utilisateurs, réseau).
+
+\subsubsection{Détection}
+
+Les sources de détection incluent : Events 5857-5861 (activités WMI), Event 4688 (création processus WMIC.exe), Sysmon Event 1 (processus enfants de WmiPrvSE.exe), Event 3 (connexions réseau de WmiPrvSE.exe), Events 19-21 (souscriptions WMI persistantes), et logs réseau montrant connexions vers ports 135/5985/5986.
+
+\subsubsection{Requêtes de détection Kestrel}
+
+\paragraph{Détection d'exécution WMI distante}
+\begin{verbatim}
+# Détection d'exécution WMI distante
+wmi_processes = GET process
+  FROM stixshifter://windows-endpoint
+  WHERE parent_process.name = 'WmiPrvSE.exe'
+    AND command_line LIKE '%cmd.exe%'
+  START t-7d STOP now()
+
+DISP wmi_processes ATTR pid, name, command_line,
+     parent_process, user
+\end{verbatim}
+
+\paragraph{Détection de souscriptions WMI persistantes}
+\begin{verbatim}
+# Recherche de souscriptions WMI malveillantes
+wmi_subscriptions = GET process
+  FROM stixshifter://windows-endpoint
+  WHERE (name = 'wmic.exe' OR name = 'powershell.exe')
+    AND command_line LIKE '%__EventFilter%'
+    OR command_line LIKE '%CommandLineEventConsumer%'
+  START t-30d STOP now()
+
+DISP wmi_subscriptions ATTR name, command_line,
+     user, time
+\end{verbatim}
+
+\paragraph{Corrélation multi-hôtes WMI}
+\begin{verbatim}
+# Détection de mouvement latéral via WMI
+wmi_network = GET network-traffic
+  FROM stixshifter://windows-endpoint
+  WHERE src_port = 135
+    OR dst_port IN (135, 5985, 5986)
+  START t-24h STOP now()
+
+wmi_exec = GET process
+  FROM stixshifter://windows-endpoint
+  WHERE parent_process.name = 'WmiPrvSE.exe'
+  START t-24h STOP now()
+
+# Corrélation : Connexion WMI suivie d'exécution
+correlated = JOIN wmi_network, wmi_exec
+  ON wmi_network.dst_ip = wmi_exec.host_ip
+  WITHIN 5m
+
+DISP correlated ATTR src_ip, dst_ip, process.name,
+     process.command_line
+\end{verbatim}
+
+\subsubsection{Mitigations}
+
+Les mitigations recommandées incluent : désactivation de WMI distant sur les postes non-administratifs, restriction des permissions WMI via DCOM Security, surveillance des souscriptions WMI persistantes, utilisation d'AppLocker pour bloquer WMIC.exe, segmentation réseau (restriction ports 135, 5985, 5986), et monitoring centralisé des événements WMI.
+
+
+\subsection{T1550.002 - Pass-the-Hash (PtH)}
+
+\subsubsection{Description et Fonctionnement}
+
+Pass-the-Hash est une technique permettant à un adversaire de s'authentifier sur des systèmes distants en utilisant le hash NTLM d'un mot de passe sans avoir besoin du mot de passe en clair \cite{mitreattack2024pth}. Cette technique exploite une faiblesse du protocole d'authentification NTLM de Windows.
+
+Le protocole NTLM utilise un mécanisme challenge-response : le client calcule une réponse basée sur le hash NT (MD4 du mot de passe Unicode) et un challenge du serveur. Le hash NT est stocké dans LSASS.exe et peut être extrait via des outils comme Mimikatz \cite{gentilkiwi2024mimikatz}.
+
+Le workflow d'attaque APT41 typique comprend : compromission initiale d'un système, élévation de privilèges locaux, extraction des hashes NTLM de LSASS via Mimikatz (sekurlsa::logonpasswords), identification d'un hash d'administrateur de domaine, mouvement latéral vers d'autres systèmes via PsExec/WMI/RDP utilisant le hash, compromission du contrôleur de domaine, et extraction de tous les hashes via DCSync \cite{mandiant2020apt41}.
+
+\subsubsection{Détection}
+
+Les méthodes de détection incluent : Event 4624 Type 3/9 (authentifications réseau NTLM), Event 4648 (logon explicite avec credentials alternatifs), Sysmon Event 10 (accès au processus LSASS.exe), détection comportementale (même compte sur multiples systèmes simultanément, authentifications NTLM depuis environnements Kerberos, authentifications en cascade rapide), et détection d'outils (Mimikatz, Impacket).
+
+\subsubsection{Requêtes de détection Kestrel}
+
+\paragraph{Détection d'accès LSASS (extraction de hashes)}
+\begin{verbatim}
+# Processus accédant à LSASS.exe
+lsass_access = GET process
+  FROM stixshifter://windows-endpoint
+  WHERE name = 'lsass.exe'
+  START t-24h STOP now()
+
+suspicious_access = GET process
+  FROM stixshifter://windows-endpoint
+  WHERE target_process.name = 'lsass.exe'
+    AND name NOT IN ('svchost.exe', 'csrss.exe', 'wininit.exe')
+  START t-24h STOP now()
+
+DISP suspicious_access ATTR pid, name, user,
+     command_line, access_mask
+\end{verbatim}
+
+\paragraph{Détection de connexions NTLM anormales}
+\begin{verbatim}
+# Authentifications NTLM multiples en peu de temps
+ntlm_auth = GET authentication
+  FROM stixshifter://windows-endpoint
+  WHERE protocol = 'NTLM' AND logon_type = 3
+  START t-1h STOP now()
+
+# Grouper par utilisateur et compter les destinations
+frequent_ntlm = GROUP ntlm_auth BY user.name
+  HAVING COUNT(DISTINCT dst_ip) > 5
+
+DISP frequent_ntlm ATTR user.name, COUNT, dst_ip
+\end{verbatim}
+
+\subsubsection{Mitigations}
+
+Les mitigations techniques incluent : désactivation de NTLM et utilisation exclusive de Kerberos, placement des comptes à privilèges dans Protected Users Group, utilisation de Credential Guard (protection mémoire virtualisée), déploiement de LAPS (mots de passe administrateurs locaux uniques), et activation de Restricted Admin Mode pour RDP.
+
+Les mitigations organisationnelles incluent : principe de moindre privilège, segmentation réseau pour limiter le mouvement latéral, implémentation du Tiering Model (séparation administrative Tier 0/1/2), utilisation de comptes PAW (Privileged Access Workstations), et rotation fréquente des mots de passe de comptes à privilèges.
+
+
+\subsection{T1550.003 - Pass-the-Ticket (PtT)}
+
+\subsubsection{Description et Fonctionnement}
+
+Pass-the-Ticket est une technique d'attaque exploitant le protocole d'authentification Kerberos en volant des tickets valides (TGT/TGS) pour usurper l'identité d'utilisateurs \cite{mitreattack2024ptt}.
+
+Le protocole Kerberos fonctionne en trois étapes : Authentication Service Request (AS-REQ) où le client demande un Ticket Granting Ticket (TGT) au Key Distribution Center (KDC), Ticket Granting Service Request (TGS-REQ) où le client utilise le TGT pour demander un Ticket Granting Service (TGS) pour un service spécifique, et Application Server Request (AP-REQ) où le client présente le TGS au serveur d'application.
+
+Les types de tickets incluent : TGT (validité 10 heures, utilisable pour tous services), TGS (pour un service spécifique), Golden Ticket (TGT forgé avec hash KRBTGT, validité jusqu'à 10 ans), et Silver Ticket (TGS forgé avec hash de service, moins détectable mais portée limitée).
+
+Le processus d'exploitation PtT comprend : extraction des tickets de la mémoire LSASS.exe, exportation des tickets (.kirbi pour Mimikatz, .ccache pour Linux), injection dans une nouvelle session, et utilisation de l'identité volée sans connaître le mot de passe.
+
+APT41 utilise PtT via Mimikatz : extraction (sekurlsa::tickets /export), injection (kerberos::ptt ticket.kirbi), et création de Golden/Silver Tickets pour persistance longue durée après compromission du contrôleur de domaine.
+
+\subsubsection{Détection}
+
+Les sources de détection incluent : Event 4768 (demande TGT), Event 4769 (demande TGS), Event 4770 (renouvellement ticket), Event 4771 (échec pré-authentification Kerberos), Sysmon Event 10 (accès LSASS pour extraction), et détection d'outils (Mimikatz, Rubeus).
+
+Les indicateurs de Golden Ticket incluent : durée de vie anormalement longue, chiffrement RC4 dans environnement moderne (AES attendu), absence d'Event 4768 (AS-REQ) précédant l'utilisation, et PAC (Privilege Attribute Certificate) invalide ou manquant. Les indicateurs de Silver Ticket incluent : TGS sans TGT correspondant, absence d'Event 4769 (TGS-REQ), et PAC manquant ou invalide.
+
+\subsubsection{Requêtes de détection Kestrel}
+
+\paragraph{Détection de Golden Ticket}
+\begin{verbatim}
+# Recherche de tickets Kerberos avec durée anormale
+kerberos_tickets = GET authentication
+  FROM stixshifter://windows-endpoint
+  WHERE event_id = 4768 AND protocol = 'Kerberos'
+  START t-7d STOP now()
+
+# Filtrer les tickets avec durée > 10h
+long_tickets = FILTER kerberos_tickets
+  WHERE ticket_lifetime > 36000
+
+DISP long_tickets ATTR user.name, ticket_lifetime,
+     encryption_type, client_ip
+\end{verbatim}
+
+\paragraph{Détection d'extraction de tickets (accès LSASS)}
+\begin{verbatim}
+# Détection Mimikatz et extraction de tickets
+ticket_extraction = GET process
+  FROM stixshifter://windows-endpoint
+  WHERE (name LIKE '%mimikatz%' OR command_line LIKE '%sekurlsa::tickets%')
+    OR (target_process.name = 'lsass.exe'
+        AND access_mask = '0x1010')
+  START t-24h STOP now()
+
+DISP ticket_extraction ATTR name, command_line, user,
+     parent_process.name, time
+\end{verbatim}
+
+\paragraph{Corrélation : Extraction suivie d'authentification Kerberos}
+\begin{verbatim}
+# Processus d'extraction
+extraction = GET process
+  FROM stixshifter://windows-endpoint
+  WHERE target_process.name = 'lsass.exe'
+  START t-2h STOP now()
+
+# Authentifications Kerberos suspectes
+krb_auth = GET authentication
+  FROM stixshifter://windows-endpoint
+  WHERE event_id = 4769 AND encryption_type = 'RC4'
+  START t-2h STOP now()
+
+# Corrélation temporelle (extraction puis auth dans 30 min)
+correlated_ptt = JOIN extraction, krb_auth
+  ON extraction.host_ip = krb_auth.src_ip
+  WITHIN 30m
+
+DISP correlated_ptt ATTR extraction.name, krb_auth.user,
+     krb_auth.service, time_diff
+\end{verbatim}
+
+\subsubsection{Mitigations}
+
+Les mitigations techniques incluent : limitation de la durée de vie des tickets via GPO, désactivation du chiffrement RC4 (AES only) pour Kerberos, validation stricte du PAC (Privilege Attribute Certificate), utilisation de Credential Guard pour protéger les secrets Kerberos, et rotation du compte KRBTGT (double rotation avec 20h intervalle minimum).
+
+Les mitigations de détection incluent : monitoring centralisé des événements Kerberos (4768, 4769, 4770, 4771), alertes sur tentatives de réplication DCSync non-autorisées, surveillance des accès à LSASS.exe, détection d'outils d'extraction (Mimikatz, Rubeus) via EDR, et analyse des anomalies dans les métadonnées des tickets.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{figures/stix_json_apt41.png}
+    \caption{STIX Visualizer}
+    \label{fig:stix_json_apt41}
+\end{figure}
+
+
+
+\section{Écosystème de Détection et Simulation}
+\label{sec:ecosystem}
+
+La détection efficace des techniques d'APT41 nécessite un écosystème complet d'outils de simulation, collecte, analyse et threat hunting.
+
+\subsection{Simulation : Caldera}
+
+Caldera est une plateforme d'émulation d'adversaires développée par MITRE permettant de simuler des attaques APT \cite{caldera2024docs}. L'architecture comprend un serveur central (Python/aiohttp), des agents déployés sur les systèmes cibles, et des profils adversaires contenant des "abilities" (techniques ATT\&CK). Caldera permet la création d'opérations automatisées reproduisant les TTPs d'APT41 pour valider les capacités défensives.
+
+\subsection{Détection : Wazuh et Sysmon}
+
+Wazuh est un EDR/SIEM open-source collectant et corrélant les logs de sécurité depuis des agents sur les endpoints \cite{wazuh2024docs}. L'architecture comprend un Manager central (moteur de règles), un Indexer (Elasticsearch/OpenSearch), un Dashboard (Kibana modifié), et des Agents (Windows, Linux, macOS). Wazuh corrèle les événements via des règles XML et génère des alertes automatiques.
+
+Sysmon est un service système Windows fournissant une visibilité détaillée via 29 Event IDs couvrant création de processus, connexions réseau, accès à LSASS, création de fichiers, named pipes, et activités WMI \cite{russinovich2024sysmon}. L'intégration Wazuh-Sysmon est essentielle pour la détection des techniques APT41.
+
+\subsection{Threat Hunting : Kestrel}
+
+Kestrel est un langage déclaratif de threat hunting développé par l'Open Cybersecurity Alliance \cite{kestrel2024docs}. La syntaxe comprend : GET (récupération de données), FILTER (filtrage), GROUP (agrégation), JOIN (corrélation temporelle), et DISP (affichage). Les avantages incluent la composabilité (réutilisation de variables), la portabilité multi-sources via STIX-Shifter, l'abstraction (indépendance de la source), et l'automation (exécution programmée).
+
+
+\subsection{Pipeline de Détection Complet}
+
+Le pipeline intégré comprend six étapes : Caldera simule les attaques APT41, Sysmon et Wazuh collectent les événements, OCSF normalise les données, Wazuh corrèle et génère des alertes automatiques, Kestrel permet le threat hunting proactif, et la réponse peut être automatisée (SOAR) ou manuelle (analystes).
+
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+Cet état de l'art a présenté une analyse approfondie du groupe APT41 et de ses techniques de mouvement latéral, ainsi que l'écosystème d'outils permettant leur simulation et détection.
+
+\subsection{Synthèse des Contributions}
+
+Les principales contributions incluent : (1) APT41 combine de manière unique espionnage sponsorisé par l'État et cybercriminalité, ciblant des secteurs stratégiques avec sophistication, (2) les cinq techniques de mouvement latéral étudiées exploitent des protocoles légitimes (RDP, SMB, WMI, Kerberos, NTLM), rendant leur détection particulièrement complexe, (3) le framework MITRE ATT\&CK fournit un vocabulaire standardisé facilitant la communication et l'analyse, et (4) un écosystème d'outils open-source performant existe (Caldera, Wazuh, Sysmon, Kestrel, OCSF).
+
+\subsection{Défis de Détection}
+
+Les défis principaux incluent : la nature légitime des protocoles exploités génère un bruit important, les credentials valides volés rendent les authentifications apparemment légitimes, la nécessité de corrélation multi-sources pour identifier les patterns malveillants, et le temps limité entre compromission et détection (dwell time moyen de 21 jours en 2023).
+
+\subsection{Perspectives de Recherche}
+
+Les perspectives futures incluent : l'intégration de machine learning pour la détection comportementale et réduction des faux positifs, l'analyse approfondie des techniques d'évasion d'APT41, le développement de techniques de déception active (honeypots, honeytokens), et l'automatisation du threat intelligence via STIX/TAXII.
+
+\subsection{Implications Pratiques}
+
+Les recommandations pour les praticiens incluent : l'adoption d'une approche défense en profondeur combinant prévention et détection, le déploiement d'EDR avec règles spécifiques aux TTPs d'APT41, la réalisation d'émulations régulières via Caldera pour valider les capacités défensives, le threat hunting proactif utilisant Kestrel, et la standardisation des logs via OCSF pour faciliter la corrélation.
+
+La sophistication croissante d'APT41 nécessite une évolution correspondante des défenses. La combinaison de frameworks standardisés, d'outils de simulation réalistes, de plateformes de détection performantes et de langages de threat hunting expressifs offre des moyens efficaces de contrer ces menaces. Cependant, la technologie seule ne suffit pas : une compréhension approfondie des motivations, capacités et modes opératoires de l'adversaire demeure la pierre angulaire d'une cyberdéfense efficace.

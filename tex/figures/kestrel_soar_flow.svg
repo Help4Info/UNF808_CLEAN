@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600">
+  
+  <defs>
+    <style>
+      text { font-family: Arial, sans-serif; }
+      .phase-title { font-size: 14px; font-weight: bold; }
+      .subtitle { font-size: 11px; }
+      .metric { font-size: 10px; fill: #666; }
+    </style>
+    
+    <!-- Marqueur flèche -->
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#1976D2"/>
+    </marker>
+  </defs>
+  
+  <!-- Titre -->
+  <text x="600" y="30" text-anchor="middle" font-size="20" font-weight="bold">
+    Pipeline SOAR Complet avec Kestrel
+  </text>
+  
+  <!-- Phase 1: HUNTING -->
+  <rect x="50" y="100" width="190" height="80" rx="10" fill="#4DD0E1" 
+        stroke="#000" stroke-width="3"/>
+  <text x="145" y="130" text-anchor="middle" class="phase-title">HUNTING</text>
+  <text x="145" y="150" text-anchor="middle" class="subtitle">Kestrel</text>
+  <text x="145" y="165" text-anchor="middle" class="subtitle">6 Huntflows</text>
+  
+  <!-- Métrique sous Phase 1 -->
+  <text x="145" y="200" text-anchor="middle" class="metric">24,879</text>
+  <text x="145" y="215" text-anchor="middle" class="metric">detections</text>
+  
+  <!-- Phase 2: DETECTION -->
+  <rect x="260" y="100" width="190" height="80" rx="10" fill="#FFE082"
+        stroke="#000" stroke-width="3"/>
+  <text x="355" y="130" text-anchor="middle" class="phase-title">DETECTION</text>
+  <text x="355" y="150" text-anchor="middle" class="subtitle">PostgreSQL</text>
+  <text x="355" y="165" text-anchor="middle" class="subtitle">apt41_hunts</text>
+  
+  <text x="355" y="200" text-anchor="middle" class="metric">5 tables</text>
+  <text x="355" y="215" text-anchor="middle" class="metric">PostgreSQL</text>
+  
+  <!-- Phase 3: ANALYSIS -->
+  <rect x="470" y="100" width="190" height="80" rx="10" fill="#FFAB91"
+        stroke="#000" stroke-width="3"/>
+  <text x="565" y="130" text-anchor="middle" class="phase-title">ANALYSIS</text>
+  <text x="565" y="150" text-anchor="middle" class="subtitle">AI GPT</text>
+  <text x="565" y="165" text-anchor="middle" class="subtitle">Risk Scoring</text>
+  
+  <text x="565" y="200" text-anchor="middle" class="metric">OpenAI</text>
+  <text x="565" y="215" text-anchor="middle" class="metric">GPT-3.5</text>
+  
+  <!-- Phase 4: RESPONSE -->
+  <rect x="680" y="100" width="190" height="80" rx="10" fill="#EF9A9A"
+        stroke="#000" stroke-width="3"/>
+  <text x="775" y="130" text-anchor="middle" class="phase-title">RESPONSE</text>
+  <text x="775" y="150" text-anchor="middle" class="subtitle">Automation</text>
+  <text x="775" y="165" text-anchor="middle" class="subtitle">Playbooks</text>
+  
+  <text x="775" y="200" text-anchor="middle" class="metric">93% time</text>
+  <text x="775" y="215" text-anchor="middle" class="metric">reduction</text>
+  
+  <!-- Phase 5: MONITOR -->
+  <rect x="890" y="100" width="190" height="80" rx="10" fill="#CE93D8"
+        stroke="#000" stroke-width="3"/>
+  <text x="985" y="130" text-anchor="middle" class="phase-title">MONITOR</text>
+  <text x="985" y="150" text-anchor="middle" class="subtitle">Grafana</text>
+  <text x="985" y="165" text-anchor="middle" class="subtitle">Dashboard</text>
+  
+  <text x="985" y="200" text-anchor="middle" class="metric">Real-time</text>
+  <text x="985" y="215" text-anchor="middle" class="metric">visualization</text>
+  
+  <!-- Flèches entre phases -->
+  
+  <!-- Hunting -> Detection -->
+  <line x1="240" y1="140" x2="260" y2="140" stroke="#1976D2" stroke-width="4" 
+        marker-end="url(#arrow)"/>
+  <text x="250" y="125" text-anchor="middle" font-size="10" fill="#1976D2" font-style="italic">
+    &lt;3s
+  </text>
+  
+  <!-- Detection -> Analysis -->
+  <line x1="450" y1="140" x2="470" y2="140" stroke="#1976D2" stroke-width="4"
+        marker-end="url(#arrow)"/>
+  <text x="460" y="125" text-anchor="middle" font-size="10" fill="#1976D2" font-style="italic">
+    Real-time
+  </text>
+  
+  <!-- Analysis -> Response -->
+  <line x1="660" y1="140" x2="680" y2="140" stroke="#1976D2" stroke-width="4"
+        marker-end="url(#arrow)"/>
+  <text x="670" y="125" text-anchor="middle" font-size="10" fill="#1976D2" font-style="italic">
+    Auto
+  </text>
+  
+  <!-- Response -> Monitor -->
+  <line x1="870" y1="140" x2="890" y2="140" stroke="#1976D2" stroke-width="4"
+        marker-end="url(#arrow)"/>
+  <text x="880" y="125" text-anchor="middle" font-size="10" fill="#1976D2" font-style="italic">
+    5min
+  </text>
+  
+  <!-- Timeline totale -->
+  <line x1="50" y1="270" x2="1080" y2="270" stroke="#D32F2F" stroke-width="4"/>
+  
+  <!-- Flèche gauche -->
+  <polygon points="50,270 60,265 60,275" fill="#D32F2F"/>
+  
+  <!-- Flèche droite -->
+  <polygon points="1080,270 1070,265 1070,275" fill="#D32F2F"/>
+  
+  <text x="565" y="295" text-anchor="middle" font-size="14" font-weight="bold" fill="#D32F2F">
+    Pipeline complet: ~11.5 minutes
+  </text>
+  
+  <text x="565" y="315" text-anchor="middle" font-size="12" fill="#D32F2F">
+    (vs 165 minutes manuel = 93% réduction)
+  </text>
+  
+  <!-- Avantages clés -->
+  <text x="50" y="360" font-size="14" font-weight="bold">Avantages Clés:</text>
+  
+  <text x="70" y="390" font-size="11">
+    ✓ Standardisation: Langage Kestrel indépendant de la source
+  </text>
+  
+  <text x="70" y="415" font-size="11">
+    ✓ Automatisation: Pipeline end-to-end sans intervention
+  </text>
+  
+  <text x="70" y="440" font-size="11">
+    ✓ Scalabilité: 24,879 détections analysées en 48h
+  </text>
+  
+  <text x="70" y="465" font-size="11">
+    ✓ Intelligence: AI-powered threat scoring et priorisation
+  </text>
+  
+  <text x="70" y="490" font-size="11">
+    ✓ Visibilité: Dashboards temps réel pour SOC
+  </text>
+  
+  <!-- Métriques techniques -->
+  <text x="650" y="360" font-size="14" font-weight="bold">Métriques Techniques:</text>
+  
+  <text x="670" y="390" font-size="11">
+    • Temps moyen par huntflow: 2.3 secondes
+  </text>
+  
+  <text x="670" y="415" font-size="11">
+    • Taux de détection: 98.46% (validation Caldera)
+  </text>
+  
+  <text x="670" y="440" font-size="11">
+    • Techniques couvertes: 5/5 (100%)
+  </text>
+  
+  <text x="670" y="465" font-size="11">
+    • Systèmes surveillés: 2 agents Windows
+  </text>
+  
+  <text x="670" y="490" font-size="11">
+    • Règles Wazuh déployées: 55 personnalisées
+  </text>
+  
+  <!-- Légende -->
+  <rect x="50" y="520" width="1100" height="60" rx="5" fill="#F5F5F5" stroke="#CCC" stroke-width="1"/>
+  
+  <text x="60" y="540" font-size="11" font-weight="bold">Technologies utilisées:</text>
+  
+  <text x="70" y="560" font-size="10">
+    Kestrel (KAAS) | STIX-Shifter 6.1.1 | Wazuh 4.11 (OpenSearch 2.x) | PostgreSQL 15 | 
+    OpenAI GPT-3.5 | Grafana | Python 3.11
+  </text>
+  
+  <!-- Watermark -->
+  <text x="600" y="595" text-anchor="middle" font-size="10" fill="#999">
+    APT41 Threat Hunting Platform - Groupe 1 - Université de Sherbrooke
+  </text>
+  
+</svg>

@@ -1,0 +1,231 @@
+% ============================================================================
+% FIGURES ET TABLES ADDITIONNELLES - KESTREL
+% ============================================================================
+
+% ----------------------------------------------------------------------------
+% Figure : Comparaison Kestrel vs Python Direct
+% ----------------------------------------------------------------------------
+\begin{table}[H]
+\centering
+\caption{Comparaison Kestrel vs requêtes Python directes}
+\label{tab:kestrel-vs-python}
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Critère} & \textbf{Kestrel} & \textbf{Python Direct} & \textbf{Gain} \\
+\hline
+Lignes de code (moyenne) & 8 & 45 & -82\% \\
+Temps d'écriture (min) & 5 & 25 & -80\% \\
+Maintenabilité & Excellente & Moyenne & +++ \\
+Portabilité & Multi-SIEM & Spécifique & +++ \\
+Courbe d'apprentissage & Modérée & Faible & = \\
+\hline
+\end{tabular}
+\end{table}
+
+% ----------------------------------------------------------------------------
+% Listing : Configuration Docker Compose Kestrel
+% ----------------------------------------------------------------------------
+\begin{lstlisting}[language=yaml, caption=Configuration Docker Compose pour Kestrel]
+services:
+  kestrel-apt41:
+    image: kpeeples/kaas-baseline:latest
+    container_name: kestrel-apt41
+    hostname: kestrel-apt41
+    ports:
+      - "8889:8888"
+    volumes:
+      - ./kestrel-config:/etc/kestrel
+      - ./kestrel-hunts:/home/jovyan/hunts
+      - ./scripts:/home/jovyan/scripts
+    environment:
+      JUPYTER_ENABLE_LAB: "yes"
+      GRANT_SUDO: "yes"
+    networks:
+      - security-net-apt41
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+\end{lstlisting}
+
+% ----------------------------------------------------------------------------
+% Table : Mapping STIX → Wazuh Fields
+% ----------------------------------------------------------------------------
+\begin{table}[H]
+\centering
+\caption{Mapping STIX Cyber Observables → Champs Wazuh}
+\label{tab:stix-wazuh-mapping}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{STIX Observable} & \textbf{Champ Wazuh} & \textbf{Exemple} \\
+\hline
+\texttt{process:name} & \texttt{data.win.eventdata.image} & lsass.exe \\
+\texttt{network-traffic:dst\_port} & \texttt{data.dstport} & 3389 \\
+\texttt{network-traffic:src\_ip} & \texttt{data.srcip} & 192.168.1.25 \\
+\texttt{file:path} & \texttt{data.win.eventdata.targetFilename} & C:\textbackslash{}\textbackslash{}Windows\textbackslash{}... \\
+\texttt{user:name} & \texttt{data.win.eventdata.targetUserName} & Administrator \\
+\texttt{rule.id} & \texttt{rule.id} & 110030 \\
+\hline
+\end{tabular}
+\end{table}
+
+% ----------------------------------------------------------------------------
+% Code : Script d'Installation Automatique
+% ----------------------------------------------------------------------------
+\begin{lstlisting}[language=bash, caption=Script d'installation Kestrel + STIX-Shifter]
+#!/bin/bash
+# Installation automatique du stack Kestrel
+
+# 1. Installer STIX-Shifter dans le container
+docker exec -u root kestrel-apt41 pip install \
+    stix-shifter==6.1.1 \
+    stix-shifter-utils==6.1.1 \
+    stix-shifter-modules-opensearch
+
+# 2. Configurer SSL pour Wazuh certificat auto-signe
+docker exec -u root kestrel-apt41 bash -c '
+echo "import ssl" > /usr/local/lib/python3.11/site-packages/sitecustomize.py
+echo "ssl._create_default_https_context = ssl._create_unverified_context" >> /usr/local/lib/python3.11/site-packages/sitecustomize.py
+'
+
+# 3. Copier les huntflows
+docker cp ./kestrel-hunts/*.huntflow kestrel-apt41:/home/jovyan/hunts/
+
+# 4. Redemarrer
+docker-compose restart kestrel-apt41
+
+echo "✅ Installation terminée!"
+\end{lstlisting}
+
+% ----------------------------------------------------------------------------
+% Figure : Timeline d'Exécution des Huntflows
+% ----------------------------------------------------------------------------
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{ganttchart}[
+    hgrid,
+    vgrid,
+    x unit=0.8cm,
+    y unit title=0.6cm,
+    y unit chart=0.5cm,
+    title/.style={fill=blue!20},
+    bar/.append style={fill=green!50}
+]{1}{12}
+\gantttitle{Exécution Pipeline Kestrel (12 secondes)}{12} \\
+\gantttitlelist{1,...,12}{1} \\
+\ganttbar{Pass-the-Hash}{1}{3} \\
+\ganttbar{RDP Lateral}{3}{5} \\
+\ganttbar{SMB/PsExec}{5}{7} \\
+\ganttbar{WMI Execution}{7}{9} \\
+\ganttbar{Pass-the-Ticket}{9}{10} \\
+\ganttbar{Corrélation}{10}{12}
+\end{ganttchart}
+\end{tikzpicture}
+\caption{Timeline d'exécution séquentielle des 6 huntflows}
+\label{fig:kestrel-timeline}
+\end{figure}
+
+% ----------------------------------------------------------------------------
+% Table : Synthèse des Huntflows Développés
+% ----------------------------------------------------------------------------
+\begin{table}[H]
+\centering
+\caption{Synthèse des huntflows développés pour APT41}
+\label{tab:huntflows-summary}
+\small
+\begin{tabular}{|l|l|r|r|l|}
+\hline
+\textbf{Huntflow} & \textbf{Technique} & \textbf{LOC} & \textbf{Règles} & \textbf{Objectif} \\
+\hline
+pth\_detection.huntflow & T1550.002 & 12 & 5 & Auth NTLM suspectes \\
+rdp\_lateral.huntflow & T1021.001 & 14 & 5 & Propagation RDP \\
+smb\_shares.huntflow & T1021.002 & 11 & 5 & Accès C\$/ADMIN\$ \\
+wmi\_execution.huntflow & T1047 & 10 & 5 & Exécution WMI \\
+ptt\_detection.huntflow & T1550.003 & 11 & 5 & Abus tickets Kerberos \\
+apt41\_correlation.huntflow & Multi & 20 & 25 & Corrélation globale \\
+\hline
+\textbf{Total} & \textbf{5 + 1} & \textbf{78} & \textbf{50} & - \\
+\hline
+\end{tabular}
+\end{table}
+
+% ----------------------------------------------------------------------------
+% Exemple : Output Kestrel dans Jupyter
+% ----------------------------------------------------------------------------
+\begin{lstlisting}[caption=Exemple d'output Kestrel dans Jupyter]
+[EXECUTION] Huntflow: Pass-the-Hash Detection
+[STIX-SHIFTER] Connecting to wazuh-indexer...
+[OPENSEARCH] Query sent: rule.id IN ['110030', '110031', '110032']
+[RESULT] Retrieved 21597 detections from 2 agents
+
+Agent Detections Summary:
++-------------+-------+-----------+
+| Agent Name  | Count | Risk      |
++-------------+-------+-----------+
+| SDC01VIRW22 | 21492 | CRITICAL  |
+| WIN11-C3    |   105 | HIGH      |
++-------------+-------+-----------+
+
+[SAVE] Data saved to postgres://kestrel-postgres/apt41_detections
+[SUCCESS] Huntflow completed in 2.3 seconds
+\end{lstlisting}
+
+% ----------------------------------------------------------------------------
+% Diagramme : Architecture Complète avec Kestrel
+% ----------------------------------------------------------------------------
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[node distance=2cm]
+\tikzstyle{box} = [rectangle, rounded corners, minimum width=2.5cm, minimum height=1cm, text centered, draw=black, fill=blue!20]
+\tikzstyle{data} = [cylinder, shape border rotate=90, minimum width=2cm, minimum height=1.5cm, text centered, draw=black, fill=yellow!20]
+\tikzstyle{arrow} = [thick,->,>=stealth]
+
+% Nodes
+\node (wazuh) [box] {Wazuh\\Indexer};
+\node (stix) [box, right of=wazuh, xshift=3cm] {STIX\\Shifter};
+\node (kestrel) [box, right of=stix, xshift=3cm] {Kestrel\\Engine};
+\node (jupyter) [box, above of=kestrel, yshift=1cm] {Jupyter\\Notebook};
+\node (postgres) [data, below of=kestrel, yshift=-1cm] {PostgreSQL};
+\node (ai) [box, right of=postgres, xshift=3cm] {AI\\Analyzer};
+\node (grafana) [box, above of=ai, yshift=1cm] {Grafana\\Dashboard};
+
+% Arrows
+\draw [arrow] (wazuh) -- node[anchor=south] {OpenSearch} (stix);
+\draw [arrow] (stix) -- node[anchor=south] {STIX} (kestrel);
+\draw [arrow] (jupyter) -- (kestrel);
+\draw [arrow] (kestrel) -- node[anchor=west] {SAVE} (postgres);
+\draw [arrow] (postgres) -- (ai);
+\draw [arrow] (ai) -- (grafana);
+
+\end{tikzpicture}
+\caption{Architecture complète intégrant Kestrel dans le pipeline}
+\label{fig:complete-architecture}
+\end{figure}
+
+% ----------------------------------------------------------------------------
+% Table : Commandes Kestrel Utilisées
+% ----------------------------------------------------------------------------
+\begin{table}[H]
+\centering
+\caption{Commandes Kestrel utilisées dans les huntflows}
+\label{tab:kestrel-commands}
+\begin{tabular}{|l|l|p{6cm}|}
+\hline
+\textbf{Commande} & \textbf{Syntaxe} & \textbf{Description} \\
+\hline
+GET & \texttt{GET <type> FROM <source>} & Récupérer observables depuis datasource \\
+WHERE & \texttt{WHERE [condition]} & Filtrer observables selon critères STIX \\
+GROUP & \texttt{GROUP BY <attr>} & Agréger par attribut \\
+DISP & \texttt{DISP <var> LIMIT <n>} & Afficher résultats \\
+SAVE & \texttt{SAVE TO <target>} & Persister dans base de données \\
+SORT & \texttt{SORT BY <attr>} & Trier résultats \\
+HAVING & \texttt{HAVING <condition>} & Filtrer après agrégation \\
+\hline
+\end{tabular}
+\end{table}
+
+% ============================================================================
+% FIN DES FIGURES ET TABLES KESTREL
+% ============================================================================

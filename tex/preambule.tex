@@ -1,0 +1,117 @@
+% ===================================================================
+% INFORMATIONS DU DOCUMENT
+% ===================================================================
+
+\title{État de l'Art : Détection des Techniques de Mouvement Latéral du Groupe APT41}
+
+\author{
+  \textbf{Étudiant 1 : Prénom NOM} \\
+  Matricule : XXXXXXX \\[0.2cm]
+  \textbf{Étudiant 2 : Prénom NOM} \\
+  Matricule : XXXXXXX \\[0.2cm]
+  \textbf{Étudiant 3 : Prénom NOM} \\
+  Matricule : XXXXXXX \\[0.2cm]
+  \textbf{Étudiant 4 : Prénom NOM} \\
+  Matricule : XXXXXXX
+}
+
+\date{22 novembre 2024}
+
+% Informations supplémentaires pour la page de garde
+\newcommand{\institution}{UNIVERSITÉ DE SHERBROOKE (UDS)}
+\newcommand{\departement}{}
+\newcommand{\programme}{Maîtrise en Cybersécurité}
+\newcommand{\cours}{INF808 - Réaction aux attaques et analyses des attaques}
+\newcommand{\session}{Automne 2025}
+\newcommand{\professeur}{Professeur : Daniel Migault}
+
+% ===================================================================
+% PACKAGES POUR LISTINGS ET COLORATION SYNTAXIQUE
+% ===================================================================
+
+% Package pour listings avec support YAML, PowerShell, Python
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{tikz}              % Diagrammes
+\usepackage{pgfgantt}          % Gantt charts
+\usepackage{booktabs}          % Tables professionnelles
+\usepackage{float}             % Position figures [H]
+% Configuration listings
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    numbers=left,
+    numberstyle=\tiny,
+    captionpos=b,
+    backgroundcolor=\color{gray!10}
+}
+
+% Définition des couleurs pour YAML
+\definecolor{yamlkey}{RGB}{0,0,255}
+\definecolor{yamlstring}{RGB}{0,128,0}
+\definecolor{yamlcomment}{RGB}{128,128,128}
+\definecolor{yamlvalue}{RGB}{163,21,21}
+\definecolor{yamlbackground}{RGB}{248,248,248}
+
+% Configuration du langage YAML pour listings
+\lstdefinelanguage{yaml}{
+  keywords={id, name, description, tactic, technique, attack_id, platforms, windows, psh, command, cleanup, requirements, access, min_clearance, parsers, source},
+  keywordstyle=\color{yamlkey}\bfseries,
+  string=[s]{"}{"},
+  stringstyle=\color{yamlstring},
+  comment=[l]{\#},
+  commentstyle=\color{yamlcomment}\itshape,
+  morecomment=[s]{/*}{*/},
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  showstringspaces=false,
+  backgroundcolor=\color{yamlbackground}
+}
+
+% Configuration du langage PowerShell pour listings
+\lstdefinelanguage{PowerShell}{
+  keywords={function, if, else, foreach, while, return, param, begin, process, end, try, catch, finally},
+  keywordstyle=\color{blue}\bfseries,
+  string=[b]",
+  stringstyle=\color{red},
+  comment=[l]{\#},
+  commentstyle=\color{gray}\itshape,
+  morecomment=[s]{<\#}{\#>},
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  showstringspaces=false
+}
+
+% Configuration globale des listings
+\lstset{
+  basicstyle=\ttfamily\footnotesize,
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  stepnumber=1,
+  numbersep=5pt,
+  backgroundcolor=\color{yamlbackground},
+  showspaces=false,
+  showstringspaces=false,
+  showtabs=false,
+  frame=single,
+  rulecolor=\color{black},
+  tabsize=2,
+  captionpos=b,
+  breaklines=true,
+  breakatwhitespace=false,
+  breakindent=0pt,
+  postbreak=\mbox{\textcolor{gray}{$\hookrightarrow$}\space},
+  escapeinside={\%*}{*)},
+  xleftmargin=2em,
+  framexleftmargin=1.5em,
+  language=yaml
+}
+
+% Style pour code inline
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\file}[1]{\texttt{#1}}
+\newcommand{\cmd}[1]{\texttt{#1}}

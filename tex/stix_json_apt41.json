@@ -1,0 +1,357 @@
+{
+  "type": "bundle",
+  "id": "bundle--f3c1c5d0-4c8e-4f3a-9b5e-2d1f8a9c3e7f",
+  "objects": [
+    {
+      "type": "threat-actor",
+      "spec_version": "2.1",
+      "id": "threat-actor--91ae0a21-c824-4dce-8bb0-764d96f8b4e0",
+      "created": "2025-11-19T00:00:00.000Z",
+      "modified": "2025-11-19T00:00:00.000Z",
+      "name": "APT41",
+      "description": "Chinese state-sponsored threat actor conducting cyber espionage and financially motivated operations",
+      "threat_actor_types": ["nation-state"],
+      "aliases": ["Winnti", "Barium", "Wicked Panda"],
+      "sophistication": "expert",
+      "resource_level": "government"
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--eb062747-2193-45de-8fa2-e62549c37ddf",
+      "created": "2025-11-19T00:00:00.000Z",
+      "modified": "2025-11-19T00:00:00.000Z",
+      "name": "Remote Desktop Protocol (RDP)",
+      "description": "Detection of suspicious RDP connections including admin accounts, after-hours activity, and brute-force attempts. Rules: 110001-110005, 110099",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1021.001",
+          "url": "https://attack.mitre.org/techniques/T1021/001"
+        }
+      ],
+      "kill_chain_phases": [
+        {
+          "kill_chain_name": "mitre-attack",
+          "phase_name": "lateral-movement"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--4f9ca633-15c5-463c-9724-bdcd54fde541",
+      "created": "2025-11-19T00:00:00.000Z",
+      "modified": "2025-11-19T00:00:00.000Z",
+      "name": "SMB/Windows Admin Shares",
+      "description": "Monitoring of administrative share access (C$, ADMIN$, IPC$), enumeration, file writes, and PsExec usage. Rules: 110010-110014",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1021.002",
+          "url": "https://attack.mitre.org/techniques/T1021/002"
+        }
+      ],
+      "kill_chain_phases": [
+        {
+          "kill_chain_name": "mitre-attack",
+          "phase_name": "lateral-movement"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055",
+      "created": "2025-11-19T00:00:00.000Z",
+      "modified": "2025-11-19T00:00:00.000Z",
+      "name": "Windows Management Instrumentation",
+      "description": "Detection of WMI-based remote execution including PowerShell, CMD, Event Consumers, and malicious tools. Rules: 110020-110025",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1047",
+          "url": "https://attack.mitre.org/techniques/T1047"
+        }
+      ],
+      "kill_chain_phases": [
+        {
+          "kill_chain_name": "mitre-attack",
+          "phase_name": "execution"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--e624264c-033a-424d-9fd7-fc9c3bbdb03e",
+      "created": "2025-11-19T00:00:00.000Z",
+      "modified": "2025-11-19T00:00:00.000Z",
+      "name": "Pass the Hash",
+      "description": "NTLM authentication monitoring for Pass-the-Hash attacks including privileged accounts, credential dumping tools, and suspicious workstation names. Rules: 110030-110035",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1550.002",
+          "url": "https://attack.mitre.org/techniques/T1550/002"
+        }
+      ],
+      "kill_chain_phases": [
+        {
+          "kill_chain_name": "mitre-attack",
+          "phase_name": "lateral-movement"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--a93494bb-4b80-4ea1-8695-3236a49916fd",
+      "created": "2025-11-19T00:00:00.000Z",
+      "modified": "2025-11-19T00:00:00.000Z",
+      "name": "Pass the Ticket",
+      "description": "Kerberos ticket manipulation detection including Golden/Silver Tickets, Kerberoasting, RC4 downgrade attacks, and suspicious TGT/Service Ticket requests. Rules: 110040-110047",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1550.003",
+          "url": "https://attack.mitre.org/techniques/T1550/003"
+        }
+      ],
+      "kill_chain_phases": [
+        {
+          "kill_chain_name": "mitre-attack",
+          "phase_name": "lateral-movement"
+        }
+      ]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--c1-rdp-pth-combo",
+      "created": "2025-11-19T00:00:00.000Z",
+      "modified": "2025-11-19T00:00:00.000Z",
+      "name": "Combined Attack: RDP Admin + Pass-the-Hash",
+      "description": "Critical correlation detecting RDP admin access combined with Pass-the-Hash activity from same source IP. Rule: 110050",
+      "pattern": "[network-traffic:dst_port = 3389 AND windows-event-log:event_id = 4624 AND windows-event-log:authentication_package = 'NTLM']",
+      "pattern_type": "stix",
+      "valid_from": "2025-11-19T00:00:00.000Z",
+      "indicator_types": ["anomalous-activity", "malicious-activity"]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--c2-smb-wmi-combo",
+      "created": "2025-11-19T00:00:00.000Z",
+      "modified": "2025-11-19T00:00:00.000Z",
+      "name": "Attack Chain: SMB Admin Share + WMI PowerShell",
+      "description": "Critical correlation detecting SMB admin share access followed by WMI PowerShell execution. Rule: 110051",
+      "pattern": "[file:path MATCHES '.*\\\\\\\\.*\\\\(C\\$|ADMIN\\$).*' AND process:parent_image_ref.name = 'WmiPrvSE.exe' AND process:image_ref.name = 'powershell.exe']",
+      "pattern_type": "stix",
+      "valid_from": "2025-11-19T00:00:00.000Z",
+      "indicator_types": ["anomalous-activity", "malicious-activity"]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--c3-pth-wmi-combo",
+      "created": "2025-11-19T00:00:00.000Z",
+      "modified": "2025-11-19T00:00:00.000Z",
+      "name": "Combined Attack: Pass-the-Hash + WMI Remote",
+      "description": "Critical correlation confirming lateral movement via Pass-the-Hash and WMI execution. Rule: 110052",
+      "pattern": "[windows-event-log:authentication_package = 'NTLM' AND windows-event-log:logon_type = 3 AND process:parent_image_ref.name = 'WmiPrvSE.exe']",
+      "pattern_type": "stix",
+      "valid_from": "2025-11-19T00:00:00.000Z",
+      "indicator_types": ["anomalous-activity", "malicious-activity"]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--c4-ptt-rdp-combo",
+      "created": "2025-11-19T00:00:00.000Z",
+      "modified": "2025-11-19T00:00:00.000Z",
+      "name": "Combined Attack: Pass-the-Ticket + RDP",
+      "description": "Critical correlation detecting Kerberos RC4 downgrade with RDP access indicating advanced compromise. Rule: 110053",
+      "pattern": "[windows-event-log:event_id = 4768 AND windows-event-log:ticket_encryption_type = '0x17' AND network-traffic:dst_port = 3389]",
+      "pattern_type": "stix",
+      "valid_from": "2025-11-19T00:00:00.000Z",
+      "indicator_types": ["anomalous-activity", "malicious-activity"]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--c5-kerberoast-ptt",
+      "created": "2025-11-19T00:00:00.000Z",
+      "modified": "2025-11-19T00:00:00.000Z",
+      "name": "Attack Chain: Kerberoasting + Pass-the-Ticket",
+      "description": "High severity correlation indicating APT activity through multiple Kerberos service ticket requests. Rule: 110054",
+      "pattern": "[windows-event-log:event_id = 4769 AND windows-event-log:frequency > 5]",
+      "pattern_type": "stix",
+      "valid_from": "2025-11-19T00:00:00.000Z",
+      "indicator_types": ["anomalous-activity", "malicious-activity"]
+    },
+    {
+      "type": "indicator",
+      "spec_version": "2.1",
+      "id": "indicator--c6-massive-lateral",
+      "created": "2025-11-19T00:00:00.000Z",
+      "modified": "2025-11-19T00:00:00.000Z",
+      "name": "Massive Lateral Movement",
+      "description": "Critical correlation detecting sophisticated attack through massive RDP lateral movement from single source. Rule: 110055",
+      "pattern": "[network-traffic:dst_port = 3389 AND windows-event-log:logon_type = 10 AND windows-event-log:frequency > 5]",
+      "pattern_type": "stix",
+      "valid_from": "2025-11-19T00:00:00.000Z",
+      "indicator_types": ["anomalous-activity", "malicious-activity"]
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--1",
+      "created": "2025-11-19T00:00:00.000Z",
+      "modified": "2025-11-19T00:00:00.000Z",
+      "relationship_type": "uses",
+      "source_ref": "threat-actor--91ae0a21-c824-4dce-8bb0-764d96f8b4e0",
+      "target_ref": "attack-pattern--eb062747-2193-45de-8fa2-e62549c37ddf"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--2",
+      "created": "2025-11-19T00:00:00.000Z",
+      "modified": "2025-11-19T00:00:00.000Z",
+      "relationship_type": "uses",
+      "source_ref": "threat-actor--91ae0a21-c824-4dce-8bb0-764d96f8b4e0",
+      "target_ref": "attack-pattern--4f9ca633-15c5-463c-9724-bdcd54fde541"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--3",
+      "created": "2025-11-19T00:00:00.000Z",
+      "modified": "2025-11-19T00:00:00.000Z",
+      "relationship_type": "uses",
+      "source_ref": "threat-actor--91ae0a21-c824-4dce-8bb0-764d96f8b4e0",
+      "target_ref": "attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--4",
+      "created": "2025-11-19T00:00:00.000Z",
+      "modified": "2025-11-19T00:00:00.000Z",
+      "relationship_type": "uses",
+      "source_ref": "threat-actor--91ae0a21-c824-4dce-8bb0-764d96f8b4e0",
+      "target_ref": "attack-pattern--e624264c-033a-424d-9fd7-fc9c3bbdb03e"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--5",
+      "created": "2025-11-19T00:00:00.000Z",
+      "modified": "2025-11-19T00:00:00.000Z",
+      "relationship_type": "uses",
+      "source_ref": "threat-actor--91ae0a21-c824-4dce-8bb0-764d96f8b4e0",
+      "target_ref": "attack-pattern--a93494bb-4b80-4ea1-8695-3236a49916fd"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--6",
+      "created": "2025-11-19T00:00:00.000Z",
+      "modified": "2025-11-19T00:00:00.000Z",
+      "relationship_type": "indicates",
+      "source_ref": "indicator--c1-rdp-pth-combo",
+      "target_ref": "attack-pattern--eb062747-2193-45de-8fa2-e62549c37ddf"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--7",
+      "created": "2025-11-19T00:00:00.000Z",
+      "modified": "2025-11-19T00:00:00.000Z",
+      "relationship_type": "indicates",
+      "source_ref": "indicator--c1-rdp-pth-combo",
+      "target_ref": "attack-pattern--e624264c-033a-424d-9fd7-fc9c3bbdb03e"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--8",
+      "created": "2025-11-19T00:00:00.000Z",
+      "modified": "2025-11-19T00:00:00.000Z",
+      "relationship_type": "indicates",
+      "source_ref": "indicator--c2-smb-wmi-combo",
+      "target_ref": "attack-pattern--4f9ca633-15c5-463c-9724-bdcd54fde541"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--9",
+      "created": "2025-11-19T00:00:00.000Z",
+      "modified": "2025-11-19T00:00:00.000Z",
+      "relationship_type": "indicates",
+      "source_ref": "indicator--c2-smb-wmi-combo",
+      "target_ref": "attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--10",
+      "created": "2025-11-19T00:00:00.000Z",
+      "modified": "2025-11-19T00:00:00.000Z",
+      "relationship_type": "indicates",
+      "source_ref": "indicator--c3-pth-wmi-combo",
+      "target_ref": "attack-pattern--e624264c-033a-424d-9fd7-fc9c3bbdb03e"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--11",
+      "created": "2025-11-19T00:00:00.000Z",
+      "modified": "2025-11-19T00:00:00.000Z",
+      "relationship_type": "indicates",
+      "source_ref": "indicator--c3-pth-wmi-combo",
+      "target_ref": "attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--12",
+      "created": "2025-11-19T00:00:00.000Z",
+      "modified": "2025-11-19T00:00:00.000Z",
+      "relationship_type": "indicates",
+      "source_ref": "indicator--c4-ptt-rdp-combo",
+      "target_ref": "attack-pattern--a93494bb-4b80-4ea1-8695-3236a49916fd"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--13",
+      "created": "2025-11-19T00:00:00.000Z",
+      "modified": "2025-11-19T00:00:00.000Z",
+      "relationship_type": "indicates",
+      "source_ref": "indicator--c4-ptt-rdp-combo",
+      "target_ref": "attack-pattern--eb062747-2193-45de-8fa2-e62549c37ddf"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--14",
+      "created": "2025-11-19T00:00:00.000Z",
+      "modified": "2025-11-19T00:00:00.000Z",
+      "relationship_type": "indicates",
+      "source_ref": "indicator--c5-kerberoast-ptt",
+      "target_ref": "attack-pattern--a93494bb-4b80-4ea1-8695-3236a49916fd"
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--15",
+      "created": "2025-11-19T00:00:00.000Z",
+      "modified": "2025-11-19T00:00:00.000Z",
+      "relationship_type": "indicates",
+      "source_ref": "indicator--c6-massive-lateral",
+      "target_ref": "attack-pattern--eb062747-2193-45de-8fa2-e62549c37ddf"
+    }
+  ]
+}

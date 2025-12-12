@@ -1,0 +1,815 @@
+\section{Résumé Exécutif}
+
+\textbf{Projet :} Détection et réponse automatisée aux techniques de mouvement latéral d'APT41
+
+\textbf{Équipe :} 4 personnes (évaluation individuelle)
+
+\textbf{Durée :} 12-14 semaines
+
+\textbf{Objectif :} Améliorer la détection des techniques de mouvement latéral du groupe APT41 de +15\% en combinant un SIEM open-source (Wazuh) avec des modèles d'intelligence artificielle générative pour l'analyse et la réponse automatisée aux incidents.
+
+\textbf{5 Techniques ciblées :}
+\begin{itemize}
+    \item T1021.001 - Remote Desktop Protocol (RDP)
+    \item T1021.002 - SMB/Windows Admin Shares (PsExec)
+    \item T1047 - Windows Management Instrumentation (WMI)
+    \item T1550.002 - Pass-the-Hash (PtH)
+    \item T1550.003 - Pass-the-Ticket (PtT)
+\end{itemize}
+
+\textbf{Outils principaux :} Wazuh (SIEM), Caldera (Red Team), Velociraptor (DFIR), OpenAI/Claude/Gemini (IA), JIRA (ticketing), Shuffle (SOAR)
+
+\textbf{Livrables finaux :}
+\begin{itemize}
+    \item Rapport LaTeX 30-50 pages
+    \item 16+ règles Wazuh personnalisées
+    \item Pipeline SOAR complet et opérationnel
+    \item Dataset annoté de 500+ événements
+    \item Présentation 15-20 minutes
+\end{itemize}
+
+\section{Composition de l'Équipe}
+
+Le projet se fait en GROUPE, mais l'évaluation est \textbf{PERSONNELLE}. Les contributions seront tracées via GitHub (commits individuels).
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|p{6cm}|c|}
+\hline
+\textbf{Membre} \& \textbf{Rôle} \& \textbf{Responsabilités} \& \textbf{\% Travail} \\
+\hline
+Anass Kamouni \& Red Team \& Caldera, simulations APT41 \& 25\% \\
+\hline
+Brahim  Baiteche \& Blue Team \& Wazuh SIEM, règles détection \& 25\% \\
+\hline
+ Kouadio Bakary  Ouattara \& Purple Team \& Velociraptor, IA, SOAR \& 25\% \\
+\hline
+Sabrine  Ezzemrani \& Documentation \& État de l'art, rapport LaTeX \& 25\% \\
+\hline
+\end{tabular}
+\caption{Répartition du travail entre les membres}
+\label{tab:equipe}
+\end{table}
+
+\section{Problématique}
+
+\subsection{Question de Recherche}
+
+\emph{``Comment améliorer la détection des techniques de mouvement latéral spécifiques au groupe APT41 dans un environnement d'entreprise en combinant les capacités d'un SIEM open-source (Wazuh) avec des modèles d'intelligence artificielle pour l'analyse et la réponse automatisée aux incidents ?''}
+
+\subsection{Contexte}
+
+Le groupe APT41 (alias Barium, Winnti, Wicked Panda) est un acteur de menace persistante avancée d'origine chinoise actif depuis 2012. Ce groupe se distingue par :
+
+\begin{itemize}
+    \item \textbf{Campagnes hybrides :} Combinaison d'espionnage étatique et de cybercriminalité financière
+    \item \textbf{Techniques sophistiquées :} Utilisation extensive de mouvements latéraux dans les infrastructures Active Directory
+    \item \textbf{Objectifs variés :} Vol de propriété intellectuelle, compromission de supply chain, ransomware
+\end{itemize}
+
+Les techniques de mouvement latéral d'APT41 sont particulièrement difficiles à détecter car elles abusent de protocoles légitimes (RDP, WMI, SMB) et d'outils natifs Windows.
+
+\subsection{Objectifs Mesurables}
+
+\begin{enumerate}
+    \item \textbf{Amélioration de la détection :} +15\% de taux de détection par rapport aux règles Wazuh par défaut
+    \item \textbf{Réduction des faux positifs :} -20\% grâce à l'analyse contextuelle par IA
+    \item \textbf{Automatisation :} Réponse aux incidents en moins de 5 minutes via pipeline SOAR
+    \item \textbf{Dataset partageable :} 500+ événements annotés avec TTPs MITRE ATT\&CK
+    \item \textbf{Solution 100\% open-source :} Reproductible par la communauté (sauf IA)
+\end{enumerate}
+
+\subsection{Contributions Originales}
+
+\begin{itemize}
+    \item Règles Wazuh personnalisées optimisées pour APT41 (non disponibles dans la communauté)
+    \item Intégration IA générative (OpenAI/Claude/Gemini) pour enrichissement automatique d'incidents
+    \item Pipeline SOAR complet : Wazuh $\rightarrow$ IA $\rightarrow$ JIRA $\rightarrow$ Email
+    \item Guide de reproduction : Documentation technique complète pour réplication
+    \item Dataset annoté : Logs d'attaques APT41 simulées avec labels MITRE ATT\&CK
+\end{itemize}
+
+\section{État de l'Art Préliminaire}
+
+\subsection{Groupe APT41 et Techniques de Mouvement Latéral}
+
+\textbf{Profil de l'acteur de menace :}
+\begin{itemize}
+    \item \textbf{MITRE ATT\&CK ID :} G0096
+    \item \textbf{Alias :} Barium, Winnti, Wicked Panda
+    \item \textbf{Origine :} Chine (état + cybercriminalité)
+    \item \textbf{Actif depuis :} 2012
+    \item \textbf{Secteurs ciblés :} Santé, télécommunications, jeux vidéo, finance, gouvernement
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|p{5cm}|c|}
+\hline
+\textbf{Technique MITRE} \& \textbf{Description} \& \textbf{Prévalence APT41} \\
+\hline
+T1021.001 \& Remote Desktop Protocol (RDP) \& Très élevée $\star\star\star$ \\
+\hline
+T1021.002 \& SMB/Admin Shares (PsExec) \& Très élevée $\star\star\star$ \\
+\hline
+T1047 \& Windows Management Instrumentation \& Élevée $\star\star$ \\
+\hline
+T1550.002 \& Pass-the-Hash (PtH) \& Élevée $\star\star$ \\
+\hline
+T1550.003 \& Pass-the-Ticket (PtT) - Kerberos \& Moyenne $\star$ \\
+\hline
+\end{tabular}
+\caption{Techniques de mouvement latéral prioritaires pour APT41}
+\label{tab:techniques-apt41}
+\end{table}
+
+\textbf{Références clés :}
+\begin{itemize}
+    \item MITRE ATT\&CK - APT41 Group Profile (G0096) \cite{mitre-apt41}
+    \item Mandiant, ``APT41: A Dual Espionage and Cyber Crime Operation'', 2019 \cite{mandiant-apt41}
+    \item FireEye, ``Double Dragon: APT41'', 2019 \cite{fireeye-apt41}
+    \item CISA Alert (AA21-200A), ``Chinese State-Sponsored Cyber Operations'' \cite{cisa-apt41}
+\end{itemize}
+
+\subsection{SIEM Open-Source et Wazuh}
+
+Wazuh est un SIEM open-source basé sur OSSEC, offrant :
+\begin{itemize}
+    \item Détection d'intrusions basée sur règles (XML)
+    \item Collecte centralisée de logs (agents Windows/Linux)
+    \item Intégration MITRE ATT\&CK native
+    \item API RESTful pour automatisation
+    \item Dashboard Kibana/OpenSearch
+\end{itemize}
+
+\textbf{Avantages pour ce projet :}
+\begin{itemize}
+    \item[✓] 100\% open-source (objectif du projet)
+    \item[✓] Support natif Sysmon (détection bas-niveau Windows)
+    \item[✓] Règles personnalisables (XML)
+    \item[✓] Communauté active (règles Sigma converties)
+\end{itemize}
+
+\textbf{Limitations identifiées :}
+\begin{itemize}
+    \item[] Règles génériques (peu spécifiques à APT41)
+    \item[] Faux positifs élevés (environnements AD légitimes)
+    \item[] Pas d'analyse contextuelle (IA requise)
+\end{itemize}
+
+\subsection{Intelligence Artificielle pour Détection d'Intrusions}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|p{15cm}|p{15cm}|p{10cm}|}
+\hline
+\textbf{Approche} \& \textbf{Avantages} \& \textbf{Limitations} \\
+\hline
+Règles expertes \& Précision élevée, explicabilité \& Maintenabilité, évolution \\
+\hline
+ML non supervisé \& Détection d'anomalies \& Faux positifs élevés \\
+\hline
+ML supervisé \& Bonne précision \& Nécessite dataset annoté \\
+\hline
+Deep Learning \& Séquences complexes \& Coût, interprétabilité \\
+\hline
+IA générative \& Analyse contextuelle \& Coût API, latence \\
+\hline
+\end{tabular}
+\caption{Comparaison des approches d'IA pour détection d'intrusions}
+\label{tab:ia-approches}
+\end{table}
+
+\textbf{Notre approche hybride :}
+\begin{enumerate}
+    \item \textbf{Couche 1 :} Règles Wazuh expertes (détection initiale rapide)
+    \item \textbf{Couche 2 :} IA générative (enrichissement contextuel des incidents)
+    \item \textbf{Couche 3 :} Automatisation SOAR (réponse orchestrée)
+\end{enumerate}
+
+\subsection{SOAR et Automatisation}
+
+SOAR (Security Orchestration, Automation and Response) permet :
+\begin{itemize}
+    \item Orchestration multi-outils (SIEM, DFIR, ticketing)
+    \item Automatisation des playbooks de réponse
+    \item Réduction du temps de réponse (MTTR)
+\end{itemize}
+
+\textbf{Pipeline proposé :}
+\begin{center}
+Wazuh Alert $\rightarrow$ API Webhook $\rightarrow$ IA Enrichissement $\rightarrow$ JIRA Incident $\rightarrow$ Email SOC $\rightarrow$ Velociraptor Hunt
+\end{center}
+
+\textbf{Temps de réponse ciblé :}
+\begin{itemize}
+    \item Détection Wazuh : $<$10 secondes
+    \item Enrichissement IA : $<$30 secondes
+    \item Création incident JIRA : $<$60 secondes
+    \item Hunting Velociraptor : $<$5 minutes
+    \item \textbf{Total MTTR : $<$5 minutes}
+\end{itemize}
+
+\subsection{Digital Forensics and Incident Response (DFIR)}
+
+Velociraptor est un framework DFIR open-source permettant :
+\begin{itemize}
+    \item Collecte d'artefacts à grande échelle (VQL queries)
+    \item Hunting proactif (recherche d'IOCs)
+    \item Timeline reconstruction
+    \item Réponse automatisée (isolation, collecte mémoire)
+\end{itemize}
+
+\textbf{Intégration dans le projet :}
+\begin{itemize}
+    \item Déploiement sur toutes les machines Windows
+    \item Hunting automatique post-détection Wazuh
+    \item Collecte d'artefacts pour analyse forensique
+    \item Validation des détections (ground truth)
+\end{itemize}
+
+\section{Formalisations des Attaques}
+
+\subsection{Mapping MITRE ATT\&CK}
+
+\begin{table}[H]
+\centering
+\tiny
+\begin{tabular}{|l|p{3cm}|l|c|c|c|}
+\hline
+\textbf{Tactic} \& \textbf{Technique} \& \textbf{ID} \& \textbf{Priorité} \& \textbf{Wazuh} \& \textbf{Velo} \\
+\hline
+Lateral Mvt \& Remote Services: RDP \& T1021.001 \& $\star\star\star$ \& ✓ \& ✓ \\
+\hline
+Lateral Mvt \& Remote Services: SMB \& T1021.002 \& $\star\star\star$ \& ✓ \& ✓ \\
+\hline
+Execution \& WMI \& T1047 \& $\star\star$ \& ✓ \& ✓ \\
+\hline
+Credential Access \& LSASS Dump \& T1003.001 \& $\star\star\star$ \& ✓ \& ✓ \\
+\hline
+Lateral Mvt \& Pass-the-Hash \& T1550.002 \& $\star\star$ \& ✓ \& ✓ \\
+\hline
+Lateral Mvt \& Pass-the-Ticket \& T1550.003 \& $\star$ \& ✓ \& ✓ \\
+\hline
+\end{tabular}
+\caption{Matrice de couverture des techniques APT41}
+\label{tab:mitre-coverage}
+\end{table}
+
+\subsection{Modèle STIX 2.1}
+
+Exemple de formalisation STIX pour T1021.002 (PsExec Lateral Movement) :
+
+\begin{verbatim}
+{
+  "type": "attack-pattern",
+  "spec_version": "2.1",
+  "id": "attack-pattern--54a649ff-439a-41a4-9856-8d144a2551ba",
+  "name": "Remote Services: SMB/Windows Admin Shares",
+  "description": "APT41 utilise PsExec via SMB",
+  "kill_chain_phases": [{
+    "kill_chain_name": "mitre-attack",
+    "phase_name": "lateral-movement"
+  }],
+  "external_references": [{
+    "source_name": "mitre-attack",
+    "external_id": "T1021.002"
+  }]
+}
+\end{verbatim}
+
+\subsection{Cyber Kill Chain}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|l|p{4cm}|c|c|}
+\hline
+\textbf{Phase} \& \textbf{Actions APT41} \& \textbf{Wazuh} \& \textbf{Velo} \\
+\hline
+1. Reconnaissance \& Scan réseau \&  \& ✓ \\
+\hline
+2. Weaponization \& Préparation exploits \&  \&  \\
+\hline
+3. Delivery \& Phishing, supply chain \&  \&  \\
+\hline
+4. Exploitation \& Exploitation vulnérabilités \& ⚠ \& ✓ \\
+\hline
+5. Installation \& Persistence \& ✓ \& ✓ \\
+\hline
+6. Command \& Control \& Beacon C2 \& ✓ \& ✓ \\
+\hline
+7. \textbf{Actions on Objectives} \& \textbf{Lateral Movement} \& \textbf{✓} \& \textbf{✓} \\
+\hline
+\end{tabular}
+\caption{Cyber Kill Chain et couverture de détection (Focus : Phase 7)}
+\label{tab:kill-chain}
+\end{table}
+
+\section{Architecture Technique}
+
+\subsection{Infrastructure de Laboratoire}
+
+Configuration réseau isolé (5 VMs) :
+
+\begin{itemize}
+    \item \textbf{DC01} (Windows Server 2022) - 192.168.100.10 : Active Directory + DNS
+    \item \textbf{WIN-CLI01} (Windows 10 Pro) - 192.168.100.20 : Client AD + cible
+    \item \textbf{WIN-CLI02} (Windows 10 Pro) - 192.168.100.21 : Client AD + cible
+    \item \textbf{WAZUH-MGR} (Ubuntu 22.04) - 192.168.100.5 : Wazuh Manager + Velociraptor
+    \item \textbf{KALI-ATTACKER} (Kali Linux) - 192.168.100.50 : Caldera + Outils Red Team
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|l|l|c|c|c|p{4cm}|}
+\hline
+\textbf{VM} \& \textbf{OS} \& \textbf{vCPU} \& \textbf{RAM} \& \textbf{Disque} \& \textbf{Rôle} \\
+\hline
+DC01 \& Win Server 2022 \& 2 \& 4 GB \& 60 GB \& Active Directory \\
+\hline
+WIN-CLI01 \& Windows 10 Pro \& 2 \& 4 GB \& 40 GB \& Client + Cible \\
+\hline
+WIN-CLI02 \& Windows 10 Pro \& 2 \& 4 GB \& 40 GB \& Client + Cible \\
+\hline
+WAZUH-MGR \& Ubuntu 22.04 \& 4 \& 8 GB \& 80 GB \& SIEM + DFIR \\
+\hline
+KALI-ATK \& Kali Linux \& 2 \& 4 GB \& 60 GB \& Red Team \\
+\hline
+\textbf{Total} \&  \& \textbf{12} \& \textbf{24 GB} \& \textbf{280 GB} \&  \\
+\hline
+\end{tabular}
+\caption{Spécifications techniques de l'infrastructure}
+\label{tab:infra-specs}
+\end{table}
+
+\subsection{Stack Technologique}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|l|l|l|l|p{3cm}|}
+\hline
+\textbf{Catégorie} \& \textbf{Outil} \& \textbf{Version} \& \textbf{Licence} \& \textbf{Rôle} \\
+\hline
+SIEM \& Wazuh \& 4.8+ \& GPL v2 \& Détection \\
+\hline
+DFIR \& Velociraptor \& 0.7+ \& AGPL v3 \& Forensique \\
+\hline
+Red Team \& Caldera \& 5.0+ \& Apache 2.0 \& Simulation \\
+\hline
+Logging \& Sysmon \& 15+ \& Microsoft \& Télémétrie \\
+\hline
+IA \& OpenAI/Claude \& API \& Commercial \& Enrichissement \\
+\hline
+SOAR \& Shuffle/n8n \& Latest \& AGPL v3 \& Automatisation \\
+\hline
+Ticketing \& JIRA \& Cloud \& Commercial \& Incidents \\
+\hline
+\end{tabular}
+\caption{Stack technologique du projet}
+\label{tab:stack}
+\end{table}
+
+\section{Répartition du Travail}
+
+\subsection{Membre 1 - Red Team \& Simulation (25\%)}
+
+\textbf{Responsabilités principales :}
+\begin{itemize}
+    \item Installation et configuration Caldera
+    \item Création profils adversaires APT41 (5 techniques minimum)
+    \item Exécution 20+ simulations d'attaques variées
+    \item Génération dataset annoté (500+ événements)
+    \item Documentation techniques d'attaque
+\end{itemize}
+
+\textbf{Livrables :}
+\begin{itemize}
+    \item Serveur Caldera opérationnel (Semaine 4)
+    \item 5 profils adversaires YAML (Semaine 6)
+    \item Dataset logs annotés (Semaine 9)
+    \item Journal de simulation (Markdown/CSV)
+    \item Contribution état de l'art (section Red Team)
+\end{itemize}
+
+\textbf{Justification implication personnelle :}
+\begin{itemize}
+    \item Commits GitHub : Configuration Caldera + profils YAML
+    \item Dataset : Fichiers CSV/JSON avec timestamps et hash
+    \item Documentation : Guides techniques + screenshots
+\end{itemize}
+
+\subsection{Membre 2 - Blue Team \& Détection SIEM (25\%)}
+
+\textbf{Responsabilités principales :}
+\begin{itemize}
+    \item Déploiement infrastructure Wazuh (manager + agents)
+    \item Développement 16+ règles de détection personnalisées
+    \item Configuration dashboards et alertes
+    \item Validation détection (vs simulations Membre 1)
+    \item Optimisation réduction faux positifs
+\end{itemize}
+
+\textbf{Livrables :}
+\begin{itemize}
+    \item Wazuh déployé sur 4 agents (Semaine 5)
+    \item 16 règles XML custom (Semaine 9)
+    \item Dashboard Kibana APT41 (Semaine 10)
+    \item Rapport métriques (taux détection, FP/FN)
+    \item Contribution état de l'art (section SIEM)
+\end{itemize}
+
+\subsection{Membre 3 - Purple Team, IA \& Automatisation (25\%)}
+
+\textbf{Responsabilités principales :}
+\begin{itemize}
+    \item Installation Velociraptor + création VQL queries
+    \item Intégration IA (OpenAI/Claude/Gemini) avec Wazuh
+    \item Développement pipeline SOAR (Wazuh $\rightarrow$ IA $\rightarrow$ JIRA)
+    \item Automatisation emails + enrichissement incidents
+    \item Tests end-to-end du pipeline
+\end{itemize}
+
+\textbf{Livrables :}
+\begin{itemize}
+    \item Velociraptor déployé + 5 hunts VQL (Semaine 9)
+    \item Script Python intégration IA (Semaine 10)
+    \item Pipeline SOAR fonctionnel (Semaine 11)
+    \item Démo vidéo workflow complet (Semaine 12)
+    \item Contribution état de l'art (section IA + SOAR)
+\end{itemize}
+
+\subsection{Membre 4 - Documentation \& Rapport (25\%)}
+
+\textbf{Responsabilités principales :}
+\begin{itemize}
+    \item Recherche état de l'art (30+ références)
+    \item Création diagrammes STIX + MITRE ATT\&CK
+    \item Rédaction rapport LaTeX (30-50 pages)
+    \item Maintien README.md + documentation technique
+    \item Préparation présentation finale (slides)
+\end{itemize}
+
+\textbf{Livrables :}
+\begin{itemize}
+    \item État de l'art (10 pages) avec 30+ références (Semaine 3)
+    \item Diagrammes STIX/ATT\&CK (Semaine 4)
+    \item Sections méthodologie + expérimentation (Semaines 9-11)
+    \item Rapport final PDF (Semaine 13)
+    \item Présentation PowerPoint/Beamer (Semaine 13)
+\end{itemize}
+
+\section{Timeline Détaillée (12 Semaines)}
+
+\subsection{Semaines 1-2 : Recherche \& Planification}
+
+\textbf{Objectifs :}
+\begin{itemize}
+    \item Validation projet avec professeur
+    \item Recherche bibliographique initiale
+    \item Setup environnement GitHub
+\end{itemize}
+
+\textbf{Jalons :}
+\begin{itemize}
+    \item[✓] Projet validé par professeur
+    \item[✓] Repo GitHub actif (1er commit)
+    \item[✓] Rôles clairement définis
+\end{itemize}
+
+\subsection{Semaines 3-5 : Setup Infrastructure}
+
+\textbf{Objectifs :}
+\begin{itemize}
+    \item Déployer lab 5 VMs
+    \item Installer Wazuh + Caldera
+    \item Configurer Active Directory
+\end{itemize}
+
+\textbf{Jalons :}
+\begin{itemize}
+    \item[✓] 5 VMs opérationnelles
+    \item[✓] Wazuh collecte logs de 3 agents
+    \item[✓] Caldera contrôle 2 agents
+\end{itemize}
+
+\subsection{Semaines 6-7 : Développement Capacités}
+
+\textbf{Objectifs :}
+\begin{itemize}
+    \item Créer profils adversaires APT41
+    \item Développer règles Wazuh personnalisées
+    \item Première simulation test
+\end{itemize}
+
+\textbf{Jalons :}
+\begin{itemize}
+    \item[✓] 5 profils Caldera créés
+    \item[✓] 10+ règles Wazuh déployées
+    \item[✓] Première détection réussie
+\end{itemize}
+
+\subsection{Semaines 8-9 : Simulations \& Optimisation}
+
+\textbf{Objectifs :}
+\begin{itemize}
+    \item Exécuter 20+ simulations variées
+    \item Optimiser règles (réduire faux positifs)
+    \item Annoter dataset complet
+\end{itemize}
+
+\textbf{Jalons :}
+\begin{itemize}
+    \item[✓] 20+ simulations complètes
+    \item[✓] Dataset 500+ événements
+    \item[✓] Taux détection $\geq$85\%
+    \item[✓] Velociraptor déployé
+\end{itemize}
+
+\subsection{Semaines 10-11 : Intégration IA \& SOAR}
+
+\textbf{Objectifs :}
+\begin{itemize}
+    \item Intégrer IA générative avec Wazuh
+    \item Créer pipeline automatisé complet
+    \item Tester end-to-end
+\end{itemize}
+
+\textbf{Jalons :}
+\begin{itemize}
+    \item[✓] Pipeline SOAR fonctionnel
+    \item[✓] IA enrichit 100\% des incidents
+    \item[✓] MTTR $<$5 minutes validé
+    \item[✓] Démo vidéo enregistrée
+\end{itemize}
+
+\subsection{Semaines 12-13 : Rapport Final \& Présentation}
+
+\textbf{Objectifs :}
+\begin{itemize}
+    \item Finaliser rapport LaTeX (30-50 pages)
+    \item Préparer présentation (15-20 minutes)
+    \item Derniers tests et validations
+\end{itemize}
+
+\textbf{Jalons :}
+\begin{itemize}
+    \item[✓] Rapport PDF finalisé
+    \item[✓] Présentation prête
+    \item[✓] Tous les livrables sur GitHub
+    \item[✓] Projet prêt pour soutenance
+\end{itemize}
+
+\section{Premières Tâches (Semaines 1-2)}
+
+\subsection{Tâche 1 : Configuration GitHub (TOUS) - 2h}
+
+\textbf{Objectif :} Repository GitHub opérationnel avec structure projet
+
+\textbf{Structure dossiers :}
+\begin{verbatim}
+/rapport/        (LaTeX source)
+/scripts/        (Python SOAR)
+/rules/          (Wazuh XML)
+/caldera/        (Profils YAML)
+/docs/           (Documentation MD)
+/datasets/       (Logs annotés - .gitignore)
+\end{verbatim}
+
+\textbf{Critères de réussite :}
+\begin{itemize}
+    \item[✓] Repo accessible aux 4 membres
+    \item[✓] Structure dossiers créée
+    \item[✓] Template LaTeX présent
+    \item[✓] Chaque membre a cloné le repo
+\end{itemize}
+
+\subsection{Tâche 2 : État de l'Art Préliminaire (MEMBRE 4) - 8h}
+
+\textbf{Objectif :} 15 références clés identifiées et résumées
+
+\textbf{Critères de réussite :}
+\begin{itemize}
+    \item[✓] 15+ références dans bib.bib
+    \item[✓] Synthèse 3 pages
+    \item[✓] Commit GitHub
+\end{itemize}
+
+\subsection{Tâche 3 : Diagrammes STIX/ATT\&CK (MEMBRE 4) - 4h}
+
+\textbf{Objectif :} Formaliser 3 techniques APT41 en STIX 2.1
+
+\textbf{Critères de réussite :}
+\begin{itemize}
+    \item[✓] 3 fichiers JSON STIX valides
+    \item[✓] 3 diagrammes PNG/SVG
+    \item[✓] Commit GitHub
+\end{itemize}
+
+\subsection{Tâche 4 : Tests Outils Préliminaires (MEMBRES 1-2-3) - 6h}
+
+\textbf{Membre 1 (Red Team) :}
+\begin{itemize}
+    \item Installer Caldera sur VM test
+    \item Créer 1 ability simple
+    \item Déployer 1 agent Sandcat
+    \item Livrable : Screenshot dashboard
+\end{itemize}
+
+\textbf{Membre 2 (Blue Team) :}
+\begin{itemize}
+    \item Installer Wazuh Manager
+    \item Déployer 1 agent Wazuh
+    \item Configurer Sysmon
+    \item Livrable : Screenshot dashboard
+\end{itemize}
+
+\textbf{Membre 3 (Purple Team) :}
+\begin{itemize}
+    \item Tester API OpenAI/Claude/Gemini
+    \item Script Python minimal
+    \item Tester JIRA API
+    \item Livrable : Script + screenshot
+\end{itemize}
+
+\section{Ressources et Références}
+
+\subsection{Documentation Officielle}
+
+\textbf{Outils principaux :}
+\begin{itemize}
+    \item Wazuh : \url{https://documentation.wazuh.com/}
+    \item Caldera : \url{https://caldera.readthedocs.io/}
+    \item Velociraptor : \url{https://docs.velociraptor.app/}
+    \item MITRE ATT\&CK : \url{https://attack.mitre.org/groups/G0096/}
+    \item Shuffle : \url{https://shuffler.io/docs}
+    \item STIX 2.1 : \url{https://docs.oasis-open.org/cti/stix/v2.1/}
+\end{itemize}
+
+\textbf{APIs :}
+\begin{itemize}
+    \item OpenAI : \url{https://platform.openai.com/docs/}
+    \item Anthropic Claude : \url{https://docs.anthropic.com/}
+    \item Google Gemini : \url{https://ai.google.dev/docs}
+    \item JIRA API : \url{https://developer.atlassian.com/cloud/jira/}
+\end{itemize}
+
+\subsection{Datasets Publics}
+
+\begin{itemize}
+    \item CICIDS2017 : \url{https://www.unb.ca/cic/datasets/ids-2017.html}
+    \item NSL-KDD : \url{https://www.unb.ca/cic/datasets/nsl.html}
+    \item Mordor Security Dataset : \url{https://github.com/OTRF/Security-Datasets}
+    \item Atomic Red Team : \url{https://github.com/redcanaryco/atomic-red-team}
+\end{itemize}
+
+
+
+\section{Risques et Mitigation}
+
+\subsection{Risques Techniques}
+
+\begin{table}[H]
+\centering
+\small
+%\begin{tabular}{|p{10cm}|c|c|p{4cm}|}
+\begin{tabular}{|l|l|c|c|c|p{4cm}|}
+\hline
+\textbf{Risque} \& \textbf{Prob.} \& \textbf{Impact} \& \textbf{Mitigation} \\
+\hline
+Infra VM insuffisante \& Moy \& Élevé \& Cloud (AWS Free Tier) \\
+\hline
+API IA coûteuses \& Moy \& Moy \& Limiter appels, Ollama local \\
+\hline
+Caldera bloqué par AV \& Élevé \& Moy \& Environnement isolé \\
+\hline
+Logs trop volumineux \& Moy \& Moy \& Filtrage, rotation \\
+\hline
+Intégration SOAR \& Élevé \& Élevé \& Tests unitaires, MVP \\
+\hline
+\end{tabular}
+\caption{Risques techniques et stratégies de mitigation}
+\label{tab:risques-tech}
+\end{table}
+
+\subsection{Plan de Contingence}
+
+\textbf{Scénario 1 : Retard infrastructure (Semaine 6)}
+\begin{itemize}
+    \item Utiliser VMs pré-configurées
+    \item Réduire à 3 VMs (DC + 1 client + Wazuh)
+\end{itemize}
+
+\textbf{Scénario 2 : API IA trop coûteuse (Semaine 10)}
+\begin{itemize}
+    \item Utiliser Ollama (Llama 3.2 local gratuit)
+    \item Prompts simplifiés
+\end{itemize}
+
+\textbf{Scénario 3 : Détection insuffisante ($<$70\%)}
+\begin{itemize}
+    \item Réduire scope à 3 techniques
+    \item Focus sur T1021.001 + T1021.002 + T1003.001
+\end{itemize}
+
+\section{Livrables Finaux}
+
+\subsection{Rapport Technique}
+
+\begin{itemize}
+    \item \textbf{Format :} PDF généré depuis LaTeX
+    \item \textbf{Pages :} 30-50 pages
+    \item \textbf{Structure :}
+    \begin{enumerate}
+        \item Introduction (Problématique) - 4 pages
+        \item État de l'art - 10 pages
+        \item Méthodologie - 8 pages
+        \item Expérimentation - 12 pages
+        \item Conclusion - 3 pages
+        \item Références - 3 pages
+        \item Annexes - 10 pages
+    \end{enumerate}
+\end{itemize}
+
+\subsection{Code Source (GitHub)}
+
+\textbf{Repository :} \url{https://github.com/[USERNAME]/APT41-Detection-Project}
+
+\textbf{Contenu :}
+\begin{itemize}
+    \item Règles Wazuh XML (16+ fichiers)
+    \item Profils Caldera YAML (5+ fichiers)
+    \item Scripts Python SOAR (3+ fichiers)
+    \item VQL Hunts Velociraptor (5+ fichiers)
+    \item Diagrammes STIX/ATT\&CK
+    \item Documentation complète
+    \item Dataset annoté (CSV)
+\end{itemize}
+
+\subsection{Présentation}
+
+\begin{itemize}
+    \item \textbf{Format :} PowerPoint / Beamer (PDF)
+    \item \textbf{Durée :} 15-20 minutes
+    \item \textbf{Slides :} 20-25 slides
+    \item \textbf{Démo vidéo :} 5-10 minutes (optionnel mais recommandé)
+\end{itemize}
+
+\section{Contact et Validation}
+
+\subsection{Réunion de Validation (Semaine 2 - OBLIGATOIRE)}
+
+\textbf{À préparer pour la réunion :}
+\begin{itemize}
+    \item[✓] Ce document (plan de projet)
+    \item[✓] Diagrammes STIX/ATT\&CK
+    \item[✓] État de l'art préliminaire
+    \item[✓] Architecture infrastructure
+    \item[✓] Repository GitHub
+\end{itemize}
+
+\textbf{Questions à poser au professeur :}
+\begin{enumerate}
+    \item Scope acceptable ? (5 techniques vs. 3 minimum ?)
+    \item Intégration IA considérée comme contribution originale ?
+    \item Dataset annoté : format recommandé ?
+    \item Rapport : 30-50 pages inclut annexes ?
+    \item Présentation : démo live ou vidéo ?
+\end{enumerate}
+
+\subsection{Suivi Bihebdomadaire/Mensuel}
+
+\textbf{Dates suggérées (à confirmer) :}
+\begin{itemize}
+    \item Semaine 2 : Validation initiale
+    \item Semaine 5 : Revue infrastructure
+    \item Semaine 8 : Revue simulations/détection
+    \item Semaine 11 : Revue intégration IA/SOAR
+    \item Semaine 13 : Présentation finale
+\end{itemize}
+
+\section{Conclusion}
+
+Ce plan de projet présente une approche structurée et réaliste pour améliorer la détection des techniques de mouvement latéral d'APT41 en combinant un SIEM open-source (Wazuh) avec l'intelligence artificielle générative.
+
+\textbf{Points clés :}
+\begin{itemize}
+    \item Objectifs mesurables et atteignables
+    \item Répartition équitable du travail (25\% par membre)
+    \item Timeline réaliste sur 12-14 semaines
+    \item Solution 100\% open-source (sauf IA)
+    \item Contributions originales clairement identifiées
+    \item Plan de contingence pour les risques
+\end{itemize}
+
+\textbf{Prochaine étape :} Validation avec le professeur en Semaine 2.
+
+\vspace{1cm}
+
+\noindent
+%\textbf{Version :} 1.0 \\
+%\textbf{Date de création :} 2025-11-08 \\
+%\textbf{Statut :} En attente de validation professeur

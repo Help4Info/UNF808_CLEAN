@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1000" viewBox="0 0 1400 1000">
+  
+  <defs>
+    <style>
+      .mono { font-family: 'Courier New', monospace; font-size: 13px; }
+      .title { font-family: Arial, sans-serif; font-weight: bold; }
+      text { font-family: Arial, sans-serif; }
+    </style>
+  </defs>
+  
+  <!-- Header Jupyter -->
+  <rect x="0" y="0" width="1400" height="60" fill="#4E79A7"/>
+  <text x="20" y="32" font-size="18" font-weight="bold" fill="white">🪐 Jupyter Notebook</text>
+  <text x="20" y="52" font-size="12" fill="white">APT41_Kestrel_ThreatHunting.ipynb</text>
+  
+  <!-- Boutons fenêtre -->
+  <circle cx="1350" cy="30" r="8" fill="#FF5F56"/>
+  <circle cx="1325" cy="30" r="8" fill="#FFBD2E"/>
+  <circle cx="1300" cy="30" r="8" fill="#27C93F"/>
+  
+  <!-- Toolbar -->
+  <rect x="0" y="60" width="1400" height="40" fill="#EEEEEE"/>
+  
+  <!-- Boutons toolbar -->
+  <rect x="20" y="70" width="80" height="25" rx="3" fill="white" stroke="#999"/>
+  <text x="60" y="87" text-anchor="middle" font-size="11">▶ Run</text>
+  
+  <rect x="110" y="70" width="80" height="25" rx="3" fill="white" stroke="#999"/>
+  <text x="150" y="87" text-anchor="middle" font-size="11">■ Stop</text>
+  
+  <rect x="200" y="70" width="90" height="25" rx="3" fill="white" stroke="#999"/>
+  <text x="245" y="87" text-anchor="middle" font-size="11">⟳ Restart</text>
+  
+  <rect x="300" y="70" width="80" height="25" rx="3" fill="white" stroke="#999"/>
+  <text x="340" y="87" text-anchor="middle" font-size="11">+ Insert</text>
+  
+  <!-- Cellule 1: Markdown titre -->
+  <rect x="20" y="120" width="1360" height="90" rx="5" fill="white" stroke="#CCCCCC" stroke-width="2"/>
+  <text x="30" y="145" font-size="16" font-weight="bold" fill="#1F77B4">
+    ## 🎯 APT41 THREAT HUNTING NOTEBOOK
+  </text>
+  <text x="30" y="170" font-size="13">
+    <tspan font-weight="bold">Projet:</tspan> Détection Lateral Movement APT41
+  </text>
+  <text x="30" y="190" font-size="13">
+    <tspan font-weight="bold">Technologies:</tspan> Kestrel + STIX-Shifter + Wazuh-Indexer (OpenSearch)
+  </text>
+  
+  <!-- Cellule 2: Code initialisation -->
+  <rect x="20" y="230" width="1360" height="150" rx="5" fill="#F7F7F7" stroke="#4E79A7" stroke-width="3"/>
+  
+  <!-- Label In[1] -->
+  <text x="30" y="250" font-size="13" font-weight="bold" fill="#D62728">In [1]:</text>
+  
+  <!-- Code Python -->
+  <text x="90" y="255" class="mono" fill="#0000FF">from</text>
+  <text x="130" y="255" class="mono"> kestrel.session </text>
+  <text x="270" y="255" class="mono" fill="#0000FF">import</text>
+  <text x="330" y="255" class="mono"> Session</text>
+  
+  <text x="90" y="275" class="mono" fill="#0000FF">import</text>
+  <text x="140" y="275" class="mono"> ssl</text>
+  
+  <text x="90" y="295" class="mono">ssl._create_default_https_context = ssl._create_unverified_context</text>
+  
+  <text x="90" y="325" class="mono">session = Session()</text>
+  
+  <text x="90" y="345" class="mono" fill="#0000FF">print</text>
+  <text x="130" y="345" class="mono">(</text>
+  <text x="140" y="345" class="mono" fill="#008000">"✅ Kestrel ready!"</text>
+  <text x="280" y="345" class="mono">)</text>
+  
+  <!-- Output cellule 2 -->
+  <rect x="20" y="400" width="1360" height="90" rx="5" fill="white" stroke="#CCCCCC" stroke-width="2"/>
+  <text x="90" y="425" class="mono" fill="green">✅ Kestrel ready!</text>
+  <text x="90" y="450" class="mono">📡 Connected to wazuh-indexer</text>
+  <text x="90" y="470" class="mono">🔍 Session initialized</text>
+  
+  <!-- Cellule 3: Huntflow execution -->
+  <rect x="20" y="510" width="1360" height="220" rx="5" fill="#F7F7F7" stroke="#4E79A7" stroke-width="3"/>
+  
+  <text x="30" y="530" font-size="13" font-weight="bold" fill="#D62728">In [2]:</text>
+  
+  <!-- Huntflow code -->
+  <text x="90" y="535" class="mono">huntflow = </text>
+  <text x="190" y="535" class="mono" fill="#008000">"""</text>
+  
+  <text x="90" y="555" class="mono">pth_alerts = GET process</text>
+  <text x="90" y="575" class="mono">    FROM stixshifter://wazuh-indexer</text>
+  <text x="90" y="595" class="mono">    WHERE rule.id IN [</text>
+  <text x="260" y="595" class="mono" fill="#008000">'110030'</text>
+  <text x="330" y="595" class="mono">, </text>
+  <text x="350" y="595" class="mono" fill="#008000">'110031'</text>
+  <text x="420" y="595" class="mono">, </text>
+  <text x="440" y="595" class="mono" fill="#008000">'110032'</text>
+  <text x="510" y="595" class="mono">]</text>
+  
+  <text x="90" y="615" class="mono">    START t-24h STOP t</text>
+  <text x="265" y="615" class="mono" fill="#008000">'now'</text>
+  
+  <text x="90" y="655" class="mono">DISP pth_alerts LIMIT 5</text>
+  <text x="90" y="675" class="mono" fill="#008000">"""</text>
+  
+  <text x="90" y="705" class="mono">result = session.execute(huntflow)</text>
+  
+  <!-- Output cellule 3: Résultats -->
+  <rect x="20" y="750" width="1360" height="200" rx="5" fill="white" stroke="#CCCCCC" stroke-width="2"/>
+  
+  <text x="30" y="770" font-size="13" font-weight="bold" fill="#D62728">Out[2]:</text>
+  
+  <text x="90" y="775" class="mono" fill="green">[RESULT] 21,597 detections retrieved from 2 agents</text>
+  
+  <!-- Table header -->
+  <line x1="90" y1="795" x2="1300" y2="795" stroke="#CCC" stroke-width="1"/>
+  
+  <text x="90" y="815" class="mono" font-weight="bold">Agent</text>
+  <text x="250" y="815" class="mono" font-weight="bold">Timestamp</text>
+  <text x="450" y="815" class="mono" font-weight="bold">Rule</text>
+  <text x="550" y="815" class="mono" font-weight="bold">Severity</text>
+  
+  <line x1="90" y1="820" x2="1300" y2="820" stroke="#CCC" stroke-width="1"/>
+  
+  <!-- Table rows -->
+  <text x="90" y="840" class="mono">SDC01VIRW22</text>
+  <text x="250" y="840" class="mono">2025-12-05 10:30:15</text>
+  <text x="450" y="840" class="mono">110030</text>
+  <text x="550" y="840" class="mono" fill="#D32F2F" font-weight="bold">critical</text>
+  
+  <text x="90" y="860" class="mono">SDC01VIRW22</text>
+  <text x="250" y="860" class="mono">2025-12-05 10:28:42</text>
+  <text x="450" y="860" class="mono">110031</text>
+  <text x="550" y="860" class="mono" fill="#D32F2F" font-weight="bold">critical</text>
+  
+  <text x="90" y="880" class="mono">WIN11-C3</text>
+  <text x="250" y="880" class="mono">2025-12-05 10:25:18</text>
+  <text x="450" y="880" class="mono">110030</text>
+  <text x="550" y="880" class="mono" fill="#F57C00" font-weight="bold">high</text>
+  
+  <text x="90" y="900" class="mono">SDC01VIRW22</text>
+  <text x="250" y="900" class="mono">2025-12-05 10:22:55</text>
+  <text x="450" y="900" class="mono">110032</text>
+  <text x="550" y="900" class="mono" fill="#D32F2F" font-weight="bold">critical</text>
+  
+  <text x="90" y="920" class="mono">SDC01VIRW22</text>
+  <text x="250" y="920" class="mono">2025-12-05 10:20:12</text>
+  <text x="450" y="920" class="mono">110030</text>
+  <text x="550" y="920" class="mono" fill="#D32F2F" font-weight="bold">critical</text>
+  
+  <!-- Status bar -->
+  <rect x="0" y="970" width="1400" height="30" fill="#2E7D32"/>
+  <text x="20" y="990" font-size="12" fill="white">● Kernel: Python 3 (ipykernel) | Connected</text>
+  <text x="1200" y="990" font-size="12" fill="white">Last saved: 2 minutes ago</text>
+  
+</svg>

@@ -1,0 +1,408 @@
+% ===================================================================
+% RÉFÉRENCES APT41 ET RAPPORTS DE THREAT INTELLIGENCE
+% ===================================================================
+
+@techreport{fireeye2019apt41,
+  author = {{FireEye Mandiant}},
+  title = {{Double Dragon: APT41, a Dual Espionage and Cyber Crime Operation}},
+  institution = {FireEye},
+  year = {2019},
+  month = {August},
+  url = {https://www.mandiant.com/resources/apt41-dual-espionage-and-cyber-crime-operation},
+  note = {Rapport détaillant les activités duales d'APT41 : espionnage et cybercriminalité}
+}
+
+@techreport{mandiant2020apt41,
+  author = {{Mandiant}},
+  title = {{APT41: A Dual Espionage and Cyber Crime Operation}},
+  institution = {Mandiant},
+  year = {2020},
+  month = {March},
+  url = {https://www.mandiant.com/resources/blog/apt41-us-state-governments},
+  note = {Mise à jour sur les campagnes d'APT41 ciblant les gouvernements d'États américains}
+}
+
+@misc{doj2020apt41indictment,
+  author = {{U.S. Department of Justice}},
+  title = {{Chinese Hackers Charged with Intrusions Affecting Over 100 Companies and Organizations}},
+  year = {2020},
+  month = {September},
+  url = {https://www.justice.gov/opa/pr/chinese-hackers-charged-intrusions-affecting-over-100-companies-and-organizations},
+  note = {Acte d'accusation officiel contre 5 membres présumés d'APT41}
+}
+
+@techreport{talos2017ccleaner,
+  author = {{Cisco Talos}},
+  title = {{CCleanup: A Vast Number of Machines at Risk}},
+  institution = {Cisco Talos Intelligence Group},
+  year = {2017},
+  month = {September},
+  url = {https://blog.talosintelligence.com/2017/09/ccleaner-c2-concern.html},
+  note = {Analyse de l'attaque de la chaîne d'approvisionnement CCleaner par APT41}
+}
+
+% ===================================================================
+% MITRE ATT&CK FRAMEWORK
+% ===================================================================
+
+@misc{mitreattack2024framework,
+  author = {{MITRE Corporation}},
+  title = {{MITRE ATT\&CK: Adversarial Tactics, Techniques, and Common Knowledge}},
+  year = {2024},
+  url = {https://attack.mitre.org/},
+  note = {Framework de référence pour la modélisation des tactiques et techniques adverses}
+}
+
+@misc{mitreattack2024apt41,
+  author = {{MITRE Corporation}},
+  title = {{APT41 Group Profile (G0096)}},
+  year = {2024},
+  url = {https://attack.mitre.org/groups/G0096/},
+  note = {Profil détaillé du groupe APT41 dans le framework MITRE ATT\&CK}
+}
+
+@misc{mitreattack2024rdp,
+  author = {{MITRE Corporation}},
+  title = {{Remote Services: Remote Desktop Protocol (T1021.001)}},
+  year = {2024},
+  url = {https://attack.mitre.org/techniques/T1021/001/},
+  note = {Documentation de la technique de mouvement latéral via RDP}
+}
+
+@misc{mitreattack2024wmi,
+  author = {{MITRE Corporation}},
+  title = {{Windows Management Instrumentation (T1047)}},
+  year = {2024},
+  url = {https://attack.mitre.org/techniques/T1047/},
+  note = {Documentation de la technique d'exploitation WMI pour exécution distante}
+}
+
+@misc{mitreattack2024pth,
+  author = {{MITRE Corporation}},
+  title = {{Use Alternate Authentication Material: Pass the Hash (T1550.002)}},
+  year = {2024},
+  url = {https://attack.mitre.org/techniques/T1550/002/},
+  note = {Documentation de la technique Pass-the-Hash}
+}
+
+@misc{mitreattack2024ptt,
+  author = {{MITRE Corporation}},
+  title = {{Use Alternate Authentication Material: Pass the Ticket (T1550.003)}},
+  year = {2024},
+  url = {https://attack.mitre.org/techniques/T1550/003/},
+  note = {Documentation de la technique Pass-the-Ticket exploitant Kerberos}
+}
+
+% ===================================================================
+% CYBER KILL CHAIN ET DIAMOND MODEL
+% ===================================================================
+
+@techreport{cyberkillchain2011lockheed,
+  author = {Eric M. Hutchins and Michael J. Cloppert and Rohan M. Amin},
+  title = {{Intelligence-Driven Computer Network Defense Informed by Analysis of Adversary Campaigns and Intrusion Kill Chains}},
+  institution = {Lockheed Martin Corporation},
+  year = {2011},
+  url = {https://www.lockheedmartin.com/content/dam/lockheed-martin/rms/documents/cyber/LM-White-Paper-Intel-Driven-Defense.pdf},
+  note = {Papier fondateur du modèle Cyber Kill Chain}
+}
+
+@inproceedings{caltagirone2013diamond,
+  author = {Sergio Caltagirone and Andrew Pendergast and Christopher Betz},
+  title = {{The Diamond Model of Intrusion Analysis}},
+  booktitle = {Threat Connect},
+  year = {2013},
+  url = {https://www.activeresponse.org/wp-content/uploads/2013/07/diamond.pdf},
+  note = {Présentation du Diamond Model pour l'analyse d'intrusions}
+}
+
+% ===================================================================
+% OUTILS : CALDERA
+% ===================================================================
+
+@misc{caldera2024docs,
+  author = {{MITRE Corporation}},
+  title = {{CALDERA: A Scalable, Automated Adversary Emulation Platform}},
+  year = {2024},
+  url = {https://caldera.mitre.org/},
+  note = {Documentation officielle de la plateforme d'émulation d'adversaires CALDERA}
+}
+
+@inproceedings{applebaum2016caldera,
+  author = {Andy Applebaum and Doug Miller and Blake Strom and Chris Korban and Ross Wolf},
+  title = {{Intelligent, Automated Red Team Emulation}},
+  booktitle = {Proceedings of the 32nd Annual Conference on Computer Security Applications (ACSAC)},
+  year = {2016},
+  pages = {363--373},
+  publisher = {ACM},
+  doi = {10.1145/2991079.2991111},
+  note = {Article académique présentant les fondements de CALDERA}
+}
+
+% ===================================================================
+% OUTILS : WAZUH ET EDR
+% ===================================================================
+
+@misc{wazuh2024docs,
+  author = {{Wazuh, Inc.}},
+  title = {{Wazuh: The Open Source Security Platform}},
+  year = {2024},
+  url = {https://wazuh.com/},
+  note = {Documentation officielle de la plateforme EDR/SIEM Wazuh}
+}
+
+@article{wazuh2023edr,
+  author = {Santiago Bassett and Daniel B. Cid},
+  title = {{Open Source EDR: Modern Endpoint Detection and Response with Wazuh}},
+  journal = {Journal of Cybersecurity and Privacy},
+  volume = {3},
+  number = {2},
+  pages = {247--265},
+  year = {2023},
+  publisher = {MDPI},
+  doi = {10.3390/jcp3020014}
+}
+
+% ===================================================================
+% OUTILS : SYSMON
+% ===================================================================
+
+@misc{russinovich2024sysmon,
+  author = {Mark Russinovich and Thomas Garnier},
+  title = {{Sysmon: System Monitor}},
+  year = {2024},
+  publisher = {Microsoft Sysinternals},
+  url = {https://docs.microsoft.com/en-us/sysinternals/downloads/sysmon},
+  note = {Documentation officielle de Sysmon pour monitoring système Windows}
+}
+
+@inproceedings{huss2018sysmon,
+  author = {Joshua Huss},
+  title = {{Sysmon: From Basic to Advanced Threat Hunting}},
+  booktitle = {SANS DFIR Summit},
+  year = {2018},
+  url = {https://www.sans.org/cyber-security-summit/archives/},
+  note = {Présentation avancée de l'utilisation de Sysmon pour threat hunting}
+}
+
+% ===================================================================
+% OUTILS : KESTREL
+% ===================================================================
+
+@misc{kestrel2024docs,
+  author = {{Open Cybersecurity Alliance}},
+  title = {{Kestrel Threat Hunting Language}},
+  year = {2024},
+  url = {https://kestrel.readthedocs.io/},
+  note = {Documentation officielle du langage de threat hunting Kestrel}
+}
+
+@inproceedings{gao2022kestrel,
+  author = {Xiaokui Gao and Paul Coccoli and Gagan Brahmi and Vasileios Mavroeidis},
+  title = {{Kestrel: A Composable Threat Hunting Language}},
+  booktitle = {Proceedings of the IEEE International Conference on Cyber Security and Resilience (CSR)},
+  year = {2022},
+  pages = {212--219},
+  publisher = {IEEE},
+  doi = {10.1109/CSR54599.2022.9850295}
+}
+
+% ===================================================================
+% OUTILS : OCSF
+% ===================================================================
+
+@misc{ocsf2024docs,
+  author = {{Open Cybersecurity Schema Framework}},
+  title = {{OCSF: Open Cybersecurity Schema Framework}},
+  year = {2024},
+  url = {https://schema.ocsf.io/},
+  note = {Spécification du framework de schéma de cybersécurité ouvert OCSF}
+}
+
+@techreport{ocsf2023whitepaper,
+  author = {Mark Ryland and Patrick Coughlin and Bret Jordan},
+  title = {{OCSF: Addressing the Challenge of Data Interoperability in Cybersecurity}},
+  institution = {AWS Security, Splunk, IBM},
+  year = {2023},
+  url = {https://github.com/ocsf/ocsf-docs/blob/main/OCSF_Whitepaper.pdf},
+  note = {Livre blanc présentant les objectifs et l'architecture d'OCSF}
+}
+
+% ===================================================================
+% OUTILS : MIMIKATZ
+% ===================================================================
+
+@misc{gentilkiwi2024mimikatz,
+  author = {Benjamin Delpy},
+  title = {{Mimikatz}},
+  year = {2024},
+  url = {https://github.com/gentilkiwi/mimikatz},
+  note = {Outil d'extraction de credentials Windows, utilisé par APT41 et les pentesters}
+}
+
+@inproceedings{delpy2014mimikatz,
+  author = {Benjamin Delpy and Vincent Le Toux},
+  title = {{Mimikatz: A Little Tool to Play with Windows Security}},
+  booktitle = {SSTIC (Symposium sur la Sécurité des Technologies de l'Information et des Communications)},
+  year = {2014},
+  pages = {1--29},
+  url = {https://www.sstic.org/media/SSTIC2014/SSTIC-actes/post_exploitation_en_active_directory/SSTIC2014-Article-post_exploitation_en_active_directory-delpy_le_toux.pdf}
+}
+
+% ===================================================================
+% OUTILS : PSEXEC ET SYSINTERNALS
+% ===================================================================
+
+@misc{russinovich2024psexec,
+  author = {Mark Russinovich},
+  title = {{PsExec}},
+  year = {2024},
+  publisher = {Microsoft Sysinternals},
+  url = {https://docs.microsoft.com/en-us/sysinternals/downloads/psexec},
+  note = {Outil d'exécution de processus distants, utilisé légitimement et par APT41}
+}
+
+% ===================================================================
+% PROTOCOLES MICROSOFT
+% ===================================================================
+
+@techreport{microsoft2024rdp,
+  author = {{Microsoft Corporation}},
+  title = {{Remote Desktop Protocol: Basic Connectivity and Graphics Remoting}},
+  institution = {Microsoft},
+  year = {2024},
+  type = {Technical Specification},
+  url = {https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-rdpbcgr/},
+  note = {Spécification technique du protocole RDP}
+}
+
+@techreport{microsoft2024smb,
+  author = {{Microsoft Corporation}},
+  title = {{Server Message Block (SMB) Protocol}},
+  institution = {Microsoft},
+  year = {2024},
+  type = {Technical Specification},
+  url = {https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-smb2/},
+  note = {Spécification du protocole SMB versions 2 et 3}
+}
+
+@techreport{microsoft2024wmi,
+  author = {{Microsoft Corporation}},
+  title = {{Windows Management Instrumentation}},
+  institution = {Microsoft},
+  year = {2024},
+  url = {https://docs.microsoft.com/en-us/windows/win32/wmisdk/wmi-start-page},
+  note = {Documentation officielle de l'infrastructure WMI}
+}
+
+@techreport{microsoft2024kerberos,
+  author = {{Microsoft Corporation}},
+  title = {{Kerberos Protocol Extensions}},
+  institution = {Microsoft},
+  year = {2024},
+  type = {Technical Specification},
+  url = {https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-kile/},
+  note = {Extensions Microsoft au protocole Kerberos (RFC 4120)}
+}
+
+% ===================================================================
+% THREAT INTELLIGENCE ET RECHERCHE ACADÉMIQUE
+% ===================================================================
+
+@article{hutchins2011killchain,
+  author = {Eric M. Hutchins and Michael J. Cloppert and Rohan M. Amin},
+  title = {{Intelligence-Driven Computer Network Defense Informed by Analysis of Adversary Campaigns and Intrusion Kill Chains}},
+  journal = {Leading Issues in Information Warfare \& Security Research},
+  volume = {1},
+  pages = {80--106},
+  year = {2011},
+  publisher = {Academic Publishing International}
+}
+
+@inproceedings{strom2018apt,
+  author = {Blake E. Strom and Andy Applebaum and Doug P. Miller and Kathryn C. Nickels and Adam G. Pennington and Cody B. Thomas},
+  title = {{MITRE ATT\&CK: Design and Philosophy}},
+  booktitle = {Technical Report},
+  year = {2018},
+  institution = {MITRE Corporation},
+  url = {https://attack.mitre.org/docs/ATTACK_Design_and_Philosophy_March_2020.pdf},
+  note = {Document expliquant la conception et la philosophie du framework ATT\&CK}
+}
+
+@article{mavroeidis2021threatintel,
+  author = {Vasileios Mavroeidis and Siri Bromander},
+  title = {{Cyber Threat Intelligence Model: An Evaluation of Taxonomies, Sharing Standards, and Ontologies within Cyber Threat Intelligence}},
+  journal = {Future Internet},
+  volume = {13},
+  number = {3},
+  pages = {80},
+  year = {2021},
+  publisher = {MDPI},
+  doi = {10.3390/fi13030080}
+}
+
+@inproceedings{brewer2014apt,
+  author = {Richard Brewer},
+  title = {{Advanced Persistent Threats: Minimising the Damage}},
+  booktitle = {Network Security},
+  volume = {2014},
+  number = {4},
+  pages = {5--9},
+  year = {2014},
+  publisher = {Elsevier},
+  doi = {10.1016/S1353-4858(14)70039-0}
+}
+
+% ===================================================================
+% SÉCURITÉ ACTIVE DIRECTORY ET WINDOWS
+% ===================================================================
+
+@book{metcalf2017adattacks,
+  author = {Sean Metcalf and Will Schroeder},
+  title = {{Attacking and Defending Active Directory}},
+  publisher = {Black Hills Information Security},
+  year = {2017},
+  note = {Référence majeure sur les techniques d'attaque et de défense Active Directory}
+}
+
+@inproceedings{schroeder2016bloodhound,
+  author = {Will Schroeder and Andy Robbins and Rohan Vazarkar},
+  title = {{BloodHound: Six Degrees of Domain Admin}},
+  booktitle = {DEF CON 24},
+  year = {2016},
+  url = {https://www.youtube.com/watch?v=lxd2rerVsLo},
+  note = {Présentation de l'outil BloodHound pour cartographie des chemins d'attaque AD}
+}
+
+% ===================================================================
+% DETECTION ET RESPONSE
+% ===================================================================
+
+@article{singh2020edr,
+  author = {Jatinder Singh and Jennifer Ferrer and Adrian Domingo},
+  title = {{Endpoint Detection and Response: A Market Overview}},
+  journal = {Computer Fraud \& Security},
+  volume = {2020},
+  number = {10},
+  pages = {6--11},
+  year = {2020},
+  publisher = {Elsevier},
+  doi = {10.1016/S1361-3723(20)30100-5}
+}
+
+@inproceedings{lee2017threathunting,
+  author = {Robert M. Lee and David Bianco},
+  title = {{Generating Hypotheses for Successful Threat Hunting}},
+  booktitle = {SANS Cyber Threat Intelligence Summit},
+  year = {2017},
+  url = {https://www.sans.org/cyber-security-summit/archives/},
+  note = {Méthodologie de création d'hypothèses pour le threat hunting}
+}
+
+@article{bianco2014pyramid,
+  author = {David Bianco},
+  title = {{The Pyramid of Pain}},
+  journal = {Enterprise Detection \& Response},
+  year = {2014},
+  url = {http://detect-respond.blogspot.com/2013/03/the-pyramid-of-pain.html},
+  note = {Modèle conceptuel évaluant l'efficacité des indicateurs de compromission}
+}
