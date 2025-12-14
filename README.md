@@ -23,7 +23,25 @@
 **Institution:** Université de Sherbrooke (UDS)
 **Session:** Automne 2025
 **Professeur:** Daniel Migault
-**Date:** Décembre 2024
+
+<div align="center">
+
+
+[![Detection Dashboard](http://img.youtube.com/vi/R2k0KiZuqcE/maxresdefault.jpg)](http://www.youtube.com/watch?v=R2k0KiZuqcE "Wazuh & Grafana Real-time Detection - Click to Watch!")
+
+**🎥 Cliquez sur le lien la pour regarder la démo complète sur YouTube**
+
+*Architecture complète du système de détection APT41 intégrant CALDERA, Wazuh, Kestrel et SOAR*
+
+</div>
+
+
+
+
+**🎥 Cliquez sur le lien la pour regarder la présentation en ligne** :  [La Présentation web](https://pca-mtl.helpforinfo.com/inf808)
+
+
+
 
 ## 🎯 Problématique
 
